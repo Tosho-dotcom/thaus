@@ -1,0 +1,144 @@
+{
+  "_meta": {
+    "purpose": "Add-on to thaus_website_spec.json. Adds an INTERACTIVE hero graphic (cobalt node network reacting to mouse + scroll). Apply on top of the existing spec.",
+    "appliesTo": "thaus_website_spec.json -> sections.hero",
+    "supersedes": "There is NO hero video. The hero's right side uses this interactive canvas graphic instead. Ignore any earlier mention of a hero video.",
+    "instructionsToAgent": [
+      "Build a HeroGraphic React component and mount it on the RIGHT side of the hero (desktop). On mobile it sits behind the hero content as a subtle, low-opacity layer.",
+      "Use the tsParticles approach below (primary). If a dependency issue arises, fall back to the custom canvas approach described in fallback.",
+      "The graphic must feel light, premium, and calm — subtle motion, never busy or distracting from the hero text.",
+      "Respect prefers-reduced-motion: render a static version (network drawn once, no animation, no interactivity).",
+      "Keep it performant: cap FPS, reduce node count on smaller screens, pause when off-screen or tab inactive."
+    ]
+  },
+
+  "component": {
+    "name": "HeroGraphic",
+    "file": "components/hero/HeroGraphic.tsx",
+    "placement": {
+      "desktop": "Right column of the hero (roughly 45-50% width). Text/CTAs on the left, graphic on the right.",
+      "mobile": "Full-bleed behind the hero content at ~30-40% opacity so text stays readable; reduce node count.",
+      "zIndex": "Sits below the hero text layer. pointer-events enabled only over the graphic area so hover works without blocking text/CTA clicks.",
+      "background": "Transparent — the page background (#0A0A0B) shows through. No box, no border."
+    }
+  },
+
+  "primaryApproach": {
+    "library": "tsParticles",
+    "dependencies": ["@tsparticles/react", "@tsparticles/engine", "@tsparticles/slim"],
+    "install": "npm install @tsparticles/react @tsparticles/engine @tsparticles/slim",
+    "init": "Initialize the engine once with loadSlim, then render <Particles id=\"hero-graphic\" options={options} />.",
+    "options": {
+      "fullScreen": { "enable": false },
+      "background": { "color": "transparent" },
+      "fpsLimit": 60,
+      "detectRetina": true,
+      "pauseOnBlur": true,
+      "pauseOnOutsideViewport": true,
+      "particles": {
+        "number": {
+          "value": 55,
+          "density": { "enable": true, "area": 900 },
+          "responsiveNote": "Reduce to ~30 below 768px width."
+        },
+        "color": { "value": "#3B5BFF" },
+        "links": {
+          "enable": true,
+          "color": "#3B5BFF",
+          "distance": 140,
+          "opacity": 0.22,
+          "width": 1
+        },
+        "move": {
+          "enable": true,
+          "speed": 0.6,
+          "direction": "none",
+          "random": true,
+          "straight": false,
+          "outModes": { "default": "bounce" }
+        },
+        "size": { "value": { "min": 1, "max": 2.6 } },
+        "opacity": {
+          "value": { "min": 0.3, "max": 0.85 },
+          "animation": { "enable": true, "speed": 0.5, "sync": false }
+        }
+      },
+      "interactivity": {
+        "events": {
+          "onHover": {
+            "enable": true,
+            "mode": "grab",
+            "parallax": { "enable": true, "force": 28, "smooth": 12 }
+          },
+          "onClick": { "enable": false },
+          "resize": { "enable": true }
+        },
+        "modes": {
+          "grab": {
+            "distance": 160,
+            "links": { "opacity": 0.5, "color": "#3B5BFF" }
+          }
+        }
+      }
+    },
+    "notes": [
+      "onHover 'grab' draws cobalt links from the cursor to nearby nodes — the classic constellation effect the user wants.",
+      "onHover 'parallax' gently shifts the whole field toward the cursor for depth.",
+      "Keep speed low (0.6) so it reads as calm, premium motion."
+    ]
+  },
+
+  "scrollBehavior": {
+    "library": "framer-motion",
+    "spec": "Wrap the graphic in a motion.div. Use useScroll (target = hero section) and useTransform to map scroll progress to the graphic as the hero scrolls out of view.",
+    "mappings": {
+      "opacity": "scrollYProgress 0 -> 1 maps opacity 1 -> 0.25",
+      "translateY": "scrollYProgress 0 -> 1 maps y 0px -> -40px (slow parallax drift)"
+    },
+    "note": "This makes the graphic recede naturally as the user scrolls into the next section."
+  },
+
+  "reducedMotion": {
+    "detect": "useReducedMotion() from framer-motion, or CSS/media query.",
+    "fallback": "Render the node network ONCE as a static frame: nodes + links drawn, no animation, no hover interactivity, no parallax. Slightly lower opacity. Ensures accessibility and no motion for sensitive users."
+  },
+
+  "performance": [
+    "fpsLimit 60; pauseOnBlur and pauseOnOutsideViewport true.",
+    "Node count responsive: ~55 desktop, ~30 mobile.",
+    "detectRetina true for crisp lines.",
+    "Ensure the canvas cleans up on unmount.",
+    "Do not run heavy shaders; this is a lightweight 2D canvas effect."
+  ],
+
+  "fallbackApproach": {
+    "when": "Only if tsParticles causes build/version issues.",
+    "approach": "Custom lightweight <canvas> component (~100-150 lines) in components/hero/HeroCanvas.tsx.",
+    "spec": [
+      "Create N nodes (55 desktop / 30 mobile) with random positions and slow velocities on a transparent canvas sized to its container.",
+      "Each animation frame: move nodes, bounce off edges, draw nodes as small cobalt (#3B5BFF) dots.",
+      "Draw a line between any two nodes closer than 140px; line opacity scales with proximity (closer = more opaque), max ~0.22.",
+      "Track mouse position; draw brighter cobalt links (opacity ~0.5) from the cursor to nodes within 160px (the 'grab' effect).",
+      "Apply a subtle parallax: offset all nodes slightly toward the cursor (lerp, force ~28px).",
+      "Use requestAnimationFrame; cap to ~60fps; cancel on unmount; pause when tab hidden (visibilitychange) or off-screen (IntersectionObserver).",
+      "prefers-reduced-motion: draw one static frame and stop."
+    ],
+    "dependencies": "none (pure canvas + React)."
+  },
+
+  "heroLayoutUpdate": {
+    "note": "Adjust hero from single-column to a two-column layout on desktop.",
+    "desktop": "Grid: left column = kicker + headline + subhead + CTAs + status line; right column = HeroGraphic. ~55/45 split.",
+    "mobile": "Single column: hero content on top; HeroGraphic as a subtle background layer behind it (low opacity), OR a short graphic block below the CTAs — prefer background layer.",
+    "textContrast": "If graphic overlaps text on mobile, add a subtle radial/linear dark overlay behind the text for readability."
+  },
+
+  "buildInstructions": [
+    "Add the dependencies from primaryApproach.install.",
+    "Create components/hero/HeroGraphic.tsx implementing the tsParticles options above.",
+    "Update the Hero section to a two-column layout and mount HeroGraphic on the right.",
+    "Wrap the graphic in a Framer Motion motion.div wired to useScroll/useTransform per scrollBehavior.",
+    "Implement the reducedMotion static fallback.",
+    "Verify performance (no jank), responsiveness, and that hovering the graphic never blocks the CTA buttons."
+  ]
+}

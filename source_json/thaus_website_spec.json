@@ -1,0 +1,342 @@
+{
+  "_meta": {
+    "purpose": "Build specification for the Thaus studio website. Paste this into Claude Code as the source of truth for scaffolding and building the site.",
+    "instructionsToAgent": [
+      "Build a production-quality Next.js (App Router) site that matches this spec exactly: colors, fonts, icons, spacing, animation feel.",
+      "Aesthetic keyword: minimalist, professional, 'terminal-meets-studio'. Flat surfaces, no gradients, no drop-shadows except subtle elevation on cards.",
+      "Animations must be light and smooth, primarily on-scroll reveals and gentle hover. Never heavy, bouncy, or distracting. Always respect prefers-reduced-motion.",
+      "Single-page scroll layout with anchor navigation. Sections in the order listed under layout.sectionOrder.",
+      "Contact form and newsletter are UI-ONLY for now. Do NOT build a backend. Wire the submit handlers to clearly-marked TODO functions so they can be connected to an n8n webhook later.",
+      "Everything user-facing is in ENGLISH.",
+      "Place logo/favicon files from the Thaus brand pack in /public (see assets section) and reference them.",
+      "Keep code clean, typed, componentized, and commented where a human will later wire integrations."
+    ],
+    "placeholdersToFill": [
+      "portfolio.items[0] (Zynth): add real one-line description, tags, and a screenshot image at /public/portfolio/zynth.png",
+      "integrations: connect contact form + newsletter to n8n webhooks later (endpoints marked TODO)"
+    ]
+  },
+
+  "project": {
+    "name": "Thaus",
+    "tagline": "Complete business systems, built in public.",
+    "domain": "thaus.co",
+    "description": "Faceless digital product studio that builds complete business systems (web + automation) and documents the process in public.",
+    "language": "en",
+    "targetAudience": "Global, English-speaking. Small businesses / founders who want a full done-for-you web + automation system, plus an audience following the build-in-public journey.",
+    "socials": {
+      "instagram": "https://instagram.com/thaus.co",
+      "tiktok": "https://tiktok.com/@thaus.co",
+      "github": "https://github.com/thaus-co"
+    }
+  },
+
+  "techStack": {
+    "framework": "Next.js (App Router, latest)",
+    "language": "TypeScript",
+    "styling": "Tailwind CSS",
+    "components": "shadcn/ui",
+    "animation": "Framer Motion (framer-motion)",
+    "icons": "lucide-react",
+    "fonts": "next/font/google (Space Grotesk + JetBrains Mono)",
+    "deployment": "Vercel",
+    "dependencies": [
+      "framer-motion",
+      "lucide-react"
+    ],
+    "setupCommands": [
+      "npx create-next-app@latest thaus --typescript --tailwind --app --eslint",
+      "npx shadcn@latest init",
+      "npm install framer-motion lucide-react",
+      "npx shadcn@latest add button input textarea"
+    ]
+  },
+
+  "designSystem": {
+    "theme": "dark",
+    "aesthetic": "Minimalist, professional, terminal-meets-studio. Generous whitespace, precise alignment, monospace accents for labels and numbers.",
+    "colors": {
+      "bg": { "value": "#0A0A0B", "usage": "page background (near-black)" },
+      "surface": { "value": "#131316", "usage": "cards, elevated panels" },
+      "line": { "value": "#26262B", "usage": "borders, dividers, hairlines" },
+      "ink": { "value": "#F4F4F2", "usage": "primary text, wordmark" },
+      "dim": { "value": "#8A8A93", "usage": "secondary text, captions, muted labels" },
+      "accent": { "value": "#3B5BFF", "usage": "cobalt — CTAs, links, cursor, active states, focus rings, tag highlights" },
+      "accentHover": { "value": "#2E49E0", "usage": "accent hover/pressed state" }
+    },
+    "tailwindTokens": {
+      "note": "Expose the above as CSS variables and Tailwind theme colors (e.g. bg-bg, text-ink, text-dim, bg-accent, border-line).",
+      "cssVariables": {
+        "--bg": "#0A0A0B",
+        "--surface": "#131316",
+        "--line": "#26262B",
+        "--ink": "#F4F4F2",
+        "--dim": "#8A8A93",
+        "--accent": "#3B5BFF",
+        "--accent-hover": "#2E49E0"
+      }
+    },
+    "typography": {
+      "displayFont": {
+        "family": "Space Grotesk",
+        "source": "next/font/google",
+        "weights": [400, 500, 700],
+        "usage": "headings, wordmark, hero, section titles. Tight letter-spacing (-0.02em to -0.03em) on large sizes."
+      },
+      "monoFont": {
+        "family": "JetBrains Mono",
+        "source": "next/font/google",
+        "weights": [400, 700],
+        "usage": "eyebrows/kickers, section labels, tags, numbers, statuses, captions. Uppercase with wide letter-spacing (0.12em-0.16em) for labels."
+      },
+      "scale": {
+        "hero": "clamp(2.75rem, 6vw, 5rem), weight 700, line-height 1.02",
+        "h2": "clamp(1.75rem, 3.5vw, 2.75rem), weight 700",
+        "h3": "1.25rem, weight 500",
+        "body": "1rem-1.125rem, weight 400, color dim for secondary",
+        "label": "0.72rem mono, uppercase, letter-spacing 0.14em, color dim"
+      }
+    },
+    "icons": {
+      "library": "lucide-react",
+      "style": "1.5px stroke, size 18-20px inline, 24px for section markers. Use sparingly: ArrowUpRight (external/links), ArrowRight (CTA), Mail, Send, Github, Instagram, Menu, X, Check, Terminal/SquareDashed (accents).",
+      "color": "inherit; accent color on hover/active"
+    },
+    "layoutRules": {
+      "maxWidth": "1200px content container, centered, 24px side padding (mobile) / 40px (desktop)",
+      "sectionPadding": "py-24 to py-32 desktop, py-16 mobile",
+      "radius": "12px cards, 10px buttons/inputs, 8px tags",
+      "borders": "1px solid var(--line) for cards and inputs",
+      "shadows": "flat by default; optional very subtle elevation on card hover only",
+      "grid": "optional faint background grid or a thin top hairline; keep extremely subtle"
+    }
+  },
+
+  "animations": {
+    "library": "framer-motion",
+    "feel": "Light, smooth, refined. Subtle entrances on scroll, gentle hover. Nothing bouncy or heavy.",
+    "globals": {
+      "easing": "[0.22, 1, 0.36, 1] (easeOutExpo-like)",
+      "durationRange": "0.5s - 0.7s",
+      "reducedMotion": "Detect prefers-reduced-motion and disable transforms/opacity animations, render final state instantly."
+    },
+    "patterns": {
+      "scrollReveal": {
+        "trigger": "whileInView with viewport={{ once: true, amount: 0.3 }}",
+        "variant": "from { opacity: 0, y: 20 } to { opacity: 1, y: 0 }",
+        "usage": "section headings, paragraphs, cards, form"
+      },
+      "stagger": {
+        "usage": "portfolio cards, footer links, hero elements",
+        "staggerChildren": "0.08s",
+        "delayChildren": "0.1s"
+      },
+      "heroEntrance": "Kicker -> H1 -> subhead -> CTAs revealed in sequence via stagger on mount (not scroll).",
+      "hover": {
+        "buttons": "background/opacity shift + icon nudges 2-3px (ArrowRight translateX)",
+        "cards": "translateY(-4px) + border color to accent + subtle surface lighten, duration 0.25s",
+        "links": "underline grow from left or color to accent"
+      },
+      "cursorAccent": "A blinking cobalt cursor block after the wordmark/hero headline (CSS keyframe blink 1.15s steps(1) infinite).",
+      "portfolioTransitions": "Use AnimatePresence + layout animations so that when more items are added/filtered later, cards animate position smoothly (layout prop). Cards reveal with stagger on first view.",
+      "navOnScroll": "Sticky nav gains a subtle backdrop-blur + bottom hairline (border-line) after scrolling ~40px; animate opacity of the background."
+    },
+    "doNot": [
+      "No parallax-heavy hero, no large scroll-jacking, no auto-playing carousels, no confetti/particles, no long (>0.8s) animations."
+    ]
+  },
+
+  "layout": {
+    "type": "single-page-scroll",
+    "sectionOrder": ["nav", "hero", "portfolio", "contact", "newsletter", "footer"],
+    "navigation": "anchor links scrolling to section ids with smooth scroll behavior"
+  },
+
+  "sections": {
+    "nav": {
+      "id": "nav",
+      "sticky": true,
+      "content": {
+        "logo": { "type": "wordmark", "asset": "/logo/wordmark_cursor.svg", "alt": "Thaus", "linksTo": "#hero", "height": "24px" },
+        "links": [
+          { "label": "Work", "href": "#portfolio" },
+          { "label": "Contact", "href": "#contact" },
+          { "label": "Build Log", "href": "#newsletter" }
+        ],
+        "cta": { "label": "Get in touch", "href": "#contact", "style": "filled-accent-sm" },
+        "mobile": "Hamburger (lucide Menu/X) opening a minimal full-width dark menu with the same links."
+      },
+      "behavior": "Transparent at top; after 40px scroll add backdrop-blur + border-line bottom hairline."
+    },
+
+    "hero": {
+      "id": "hero",
+      "angle": "studio-first",
+      "content": {
+        "kicker": "THAUS — DIGITAL PRODUCT STUDIO",
+        "headline": "Complete business systems, built in public.",
+        "headlineNote": "Render a blinking cobalt cursor block right after the headline.",
+        "subhead": "We build the whole thing — website, automations, CRM, and the growth engine behind it. Then we document every step in the open.",
+        "ctas": [
+          { "label": "Get in touch", "href": "#contact", "style": "filled-accent", "icon": "ArrowRight" },
+          { "label": "Read the Build Log", "href": "#newsletter", "style": "outline", "icon": "ArrowUpRight" }
+        ],
+        "statusLine": {
+          "text": "STATUS: BUILDING · PROJECT #001 — MED SPA SYSTEM",
+          "style": "mono, dim, small, with a small pulsing accent dot before it"
+        }
+      },
+      "layout": "Left-aligned or centered single column, lots of whitespace. Optional very subtle background grid or a faint radial vignette (keep flat).",
+      "animation": "heroEntrance stagger on mount; cursor blink; status dot pulse."
+    },
+
+    "portfolio": {
+      "id": "portfolio",
+      "heading": "Selected systems",
+      "subheading": "Real projects, documented from zero.",
+      "cardStyle": "live-preview-plus-link",
+      "grid": "responsive: 1 col mobile, 2 col tablet, 3 col desktop. Currently 1 item; layout should look intentional with a single card (left-aligned, not stretched full width).",
+      "items": [
+        {
+          "id": "zynth",
+          "title": "Zynth",
+          "url": "https://zynth.com",
+          "description": "<<FILL: one concise line describing what Zynth is / what was built>>",
+          "tags": ["Web", "<<FILL>>", "<<FILL>>"],
+          "thumbnail": "/portfolio/zynth.png",
+          "thumbnailNote": "Add a real screenshot of the site here. Until then use a placeholder surface with the site name.",
+          "status": "Live",
+          "cta": { "label": "Visit site", "icon": "ArrowUpRight", "external": true }
+        }
+      ],
+      "cardBehavior": "Screenshot on top (16:10), title + status chip, one-line description, tag row (mono, small), footer link 'Visit site' with ArrowUpRight. Hover: lift + accent border + subtle image zoom (scale 1.03, overflow hidden).",
+      "animation": "stagger reveal on scroll; use Framer Motion `layout` so future additions/filters animate smoothly (AnimatePresence)."
+    },
+
+    "contact": {
+      "id": "contact",
+      "heading": "Start a project",
+      "subheading": "Tell me what you're building. I'll reply personally.",
+      "status": "UI-only. No backend yet.",
+      "form": {
+        "fields": [
+          { "name": "name", "label": "Name", "type": "text", "required": true },
+          { "name": "email", "label": "Email", "type": "email", "required": true },
+          { "name": "company", "label": "Company (optional)", "type": "text", "required": false },
+          {
+            "name": "projectType",
+            "label": "What do you need?",
+            "type": "select",
+            "required": true,
+            "options": ["Website", "Automation system", "Full business system", "Not sure yet"]
+          },
+          { "name": "message", "label": "Message", "type": "textarea", "required": true, "rows": 5 }
+        ],
+        "submit": { "label": "Send message", "icon": "Send", "style": "filled-accent" },
+        "wiring": "TODO: onSubmit currently prevents default and shows a success state. Add a clearly-commented `submitContact()` stub intended to POST to an n8n webhook later (e.g. process.env.NEXT_PUBLIC_CONTACT_WEBHOOK).",
+        "states": "Show inline validation, a loading state on the button, and a success message ('Thanks — I'll get back to you soon.') that replaces the form. All client-side/mocked for now."
+      },
+      "animation": "scrollReveal on heading + form; focus rings in accent; inputs with border-line, focus border accent."
+    },
+
+    "newsletter": {
+      "id": "newsletter",
+      "heading": "Build Log",
+      "subheading": "A weekly email on what I built, what broke, and what's next. No fluff.",
+      "status": "UI-only. No backend yet.",
+      "form": {
+        "fields": [
+          { "name": "email", "label": "Email", "type": "email", "required": true, "placeholder": "you@email.com" }
+        ],
+        "submit": { "label": "Subscribe", "icon": "ArrowRight", "style": "filled-accent" },
+        "layout": "Single inline row (input + button) on desktop, stacked on mobile.",
+        "wiring": "TODO: `subscribe()` stub intended for an n8n webhook later (e.g. process.env.NEXT_PUBLIC_NEWSLETTER_WEBHOOK).",
+        "states": "Loading on submit; success message ('You're in. First Build Log incoming.') replaces the input."
+      },
+      "animation": "scrollReveal; subtle accent underline accent on the heading."
+    },
+
+    "footer": {
+      "id": "footer",
+      "content": {
+        "logo": { "asset": "/logo/wordmark_cursor.svg", "height": "22px" },
+        "tagline": "Complete business systems, built in public.",
+        "socials": [
+          { "label": "Instagram", "href": "https://instagram.com/thaus.co", "icon": "Instagram" },
+          { "label": "TikTok", "href": "https://tiktok.com/@thaus.co", "icon": "Music2" },
+          { "label": "GitHub", "href": "https://github.com/thaus-co", "icon": "Github" }
+        ],
+        "legal": "© 2026 Thaus. Built in public.",
+        "backToTop": true
+      },
+      "style": "Thin top border (border-line), dim text, accent on hover for links.",
+      "animation": "links stagger reveal on scroll."
+    }
+  },
+
+  "assets": {
+    "note": "Files come from the Thaus brand pack (thaus_brand.zip). Copy into the Next.js /public folder.",
+    "logo": {
+      "wordmark": "/public/logo/wordmark_cursor.svg",
+      "wordmarkLight": "/public/logo/wordmark_cursor_light.svg",
+      "monogram": "/public/logo/monogram_badge.png"
+    },
+    "favicon": {
+      "ico": "/public/favicon.ico",
+      "svg": "/public/favicon.svg",
+      "appleTouch": "/public/apple-touch-icon.png (use favicon_180.png)",
+      "metadataNote": "Wire favicon + apple-touch-icon + og image in app/layout metadata."
+    },
+    "ogImage": "/public/og.png (use full_lockup.png at 1200x630 with dark bg — generate/pad as needed)"
+  },
+
+  "seo": {
+    "title": "Thaus — Complete business systems, built in public.",
+    "description": "Faceless digital product studio building complete business systems — web + automation — and documenting the process in the open.",
+    "openGraph": { "type": "website", "url": "https://thaus.co", "image": "/og.png" },
+    "twitterCard": "summary_large_image"
+  },
+
+  "accessibility": {
+    "requirements": [
+      "Semantic landmarks (header, main, section, footer).",
+      "Visible focus states in accent color.",
+      "Sufficient contrast (ink/dim on bg pass WCAG AA).",
+      "Respect prefers-reduced-motion.",
+      "All interactive elements keyboard reachable; form labels associated.",
+      "Alt text on all images/logos."
+    ]
+  },
+
+  "buildInstructions": {
+    "steps": [
+      "Scaffold with the setupCommands.",
+      "Configure next/font for Space Grotesk (400/500/700) and JetBrains Mono (400/700); expose as CSS variables --font-display and --font-mono.",
+      "Add the color CSS variables to globals.css and map them in tailwind.config as theme colors.",
+      "Copy brand assets into /public (logo/, favicon files).",
+      "Build components: Nav, Hero, Portfolio (PortfolioCard), Contact (ContactForm), Newsletter, Footer, plus a shared Section wrapper and a Reveal (Framer Motion) wrapper component.",
+      "Implement animation patterns via a reusable Reveal component and Framer Motion variants file.",
+      "Set metadata (title, description, favicon, og) in app/layout.tsx.",
+      "Ensure fully responsive (mobile-first) and test reduced-motion."
+    ],
+    "componentSuggestions": {
+      "Reveal": "Wrapper using motion.div with whileInView + variants for scrollReveal/stagger.",
+      "Section": "Consistent padding + max-width container + optional id anchor.",
+      "PortfolioCard": "Uses motion + layout prop for future smooth reordering."
+    },
+    "wiringLater": [
+      "Contact form -> n8n webhook (env NEXT_PUBLIC_CONTACT_WEBHOOK).",
+      "Newsletter -> n8n webhook (env NEXT_PUBLIC_NEWSLETTER_WEBHOOK)."
+    ],
+    "doNotYet": [
+      "No database, no auth, no CMS, no real email sending — UI and stubs only."
+    ]
+  },
+
+  "futureSections": [
+    "About (studio story + process)",
+    "Services / Pricing (product ladder)",
+    "Resources (free templates, workflows, checklists)",
+    "Individual project detail pages / build archive"
+  ]
+}
