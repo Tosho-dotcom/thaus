@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -15,6 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const siteUrl = "https://thaus.co";
+const gaMeasurementId = "G-D5RZMD9516";
 const title = "Thaus — Complete business systems, built in public.";
 const description =
   "Faceless digital product studio building complete business systems — web + automation — and documenting the process in the open.";
@@ -58,6 +60,16 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-bg text-ink">
         {children}
       </body>
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
+        strategy="afterInteractive"
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${gaMeasurementId}');`}
+      </Script>
     </html>
   );
 }
