@@ -93,10 +93,12 @@
    right side stays crisp. The mask is the transition: opaque through the text
    column, then a long ramp to transparent so there is no visible seam.
    Below lg there is no text/graphic split, so the whole field is veiled. */
+/* Below lg there is no mask, so this covers the whole hero. A backdrop blur of
+   any radius erases the 1–2px network nodes behind it, so mobile gets a flat
+   tint only; the lg rule below re-adds the blur, where the mask confines it to
+   the column the copy sits in. */
 .hero-veil {
-  background-color: rgba(10, 10, 11, 0.62);
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
+  background-color: rgba(10, 10, 11, 0.25);
 }
 
 @media (min-width: 1024px) {

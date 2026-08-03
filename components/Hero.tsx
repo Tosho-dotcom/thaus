@@ -44,10 +44,11 @@ export function Hero() {
       </div>
 
       {/* extra vertical readability scrim on mobile, where copy sits over the
-          full width of the field */}
+          full width of the field — kept off the middle band so the network
+          still reads through behind the headline */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-bg/80 via-bg/40 to-bg/80 lg:hidden"
+        className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-bg/40 via-transparent to-bg/40 lg:hidden"
       />
 
       <div

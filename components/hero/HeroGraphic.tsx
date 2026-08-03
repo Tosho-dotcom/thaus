@@ -11,7 +11,8 @@ const initEngine = async (engine: Engine) => {
   await loadSlim(engine);
 };
 
-function useIsMobileViewport(breakpoint = 767) {
+// matches the `lg` boundary the hero veil, scrim and pointer-events all use
+function useIsMobileViewport(breakpoint = 1023) {
   return useSyncExternalStore(
     (callback) => {
       const mq = window.matchMedia(`(max-width: ${breakpoint}px)`);
@@ -23,7 +24,7 @@ function useIsMobileViewport(breakpoint = 767) {
   );
 }
 
-function buildOptions(nodeCount: number): ISourceOptions {
+function buildOptions(): ISourceOptions {
   return {
     fullScreen: { enable: false },
     background: { color: "transparent" },
@@ -33,10 +34,10 @@ function buildOptions(nodeCount: number): ISourceOptions {
     pauseOnOutsideViewport: true,
     particles: {
       number: {
-        // the field is full-bleed, so let tsParticles scale the count with
-        // the container area — a phone and a 1440px desktop otherwise end up
-        // with wildly different densities.
-        value: nodeCount,
+        // desktop only — the field is full-bleed, so let tsParticles scale the
+        // count with the container area so a 1280px and a 2560px viewport end
+        // up with comparable densities.
+        value: 95,
         density: { enable: true, width: 1600, height: 900 },
       },
       color: { value: "#3B5BFF" },
@@ -108,13 +109,21 @@ export function HeroGraphic({ containerRef, className }: HeroGraphicProps) {
       style={{ opacity, y }}
       className={className ? `${className} h-full w-full` : "h-full w-full"}
     >
-      <ParticlesProvider init={initEngine}>
-        <Particles
-          id="hero-graphic"
-          options={buildOptions(isMobile ? 34 : 95)}
-          className="h-full w-full"
-        />
-      </ParticlesProvider>
+      {/* Touch viewports get the painted-once network: there is no cursor to
+          drive the grab/parallax interaction, so the rAF loop would burn
+          battery for nothing. Scroll takes over as the sense of motion via the
+          opacity/y transform above. */}
+      {isMobile ? (
+        <StaticNetwork />
+      ) : (
+        <ParticlesProvider init={initEngine}>
+          <Particles
+            id="hero-graphic"
+            options={buildOptions()}
+            className="h-full w-full"
+          />
+        </ParticlesProvider>
+      )}
     </motion.div>
   );
 }
