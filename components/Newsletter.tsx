@@ -16,6 +16,7 @@ function validEmail(value: string) {
 
 export function Newsletter() {
   const [email, setEmail] = useState("");
+  const [honeypot, setHoneypot] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "success">(
     "idle"
@@ -30,7 +31,7 @@ export function Newsletter() {
     setError(null);
     setStatus("loading");
     try {
-      await subscribeNewsletter({ email });
+      await subscribeNewsletter({ email, honeypot });
       setStatus("success");
     } catch {
       setStatus("idle");
@@ -87,6 +88,16 @@ export function Newsletter() {
                   className="h-11 rounded-control border-line bg-transparent px-4 text-ink placeholder:text-dim focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/40"
                 />
               </div>
+              <input
+                type="text"
+                name="honeypot"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                className="hidden"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden
+              />
               <CtaButton
                 type="submit"
                 icon={ArrowRight}
