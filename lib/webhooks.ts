@@ -1,7 +1,7 @@
 /**
- * UI-only stubs. Both forms on the site are wired to these functions instead
- * of a real backend. Point them at n8n webhooks when those are ready —
- * the fetch calls are sketched out below, just uncomment and set the env vars.
+ * Form transports. The newsletter posts straight to its n8n webhook; the
+ * contact form is still a UI-only stub — point it at a webhook when that
+ * workflow is ready, the fetch call is sketched out below.
  */
 
 export interface ContactPayload {
@@ -28,20 +28,21 @@ export async function submitContact(payload: ContactPayload): Promise<void> {
 
 export interface NewsletterPayload {
   email: string;
+  /** Honeypot: always empty for real users, filled in by bots. */
+  honeypot: string;
 }
 
-export async function subscribeNewsletter(
-  payload: NewsletterPayload
-): Promise<void> {
-  // TODO(n8n): replace the mock delay below with a real webhook call, e.g.
-  //
-  // const res = await fetch(process.env.NEXT_PUBLIC_NEWSLETTER_WEBHOOK!, {
-  //   method: "POST",
-  //   headers: { "Content-Type": "application/json" },
-  //   body: JSON.stringify(payload),
-  // });
-  // if (!res.ok) throw new Error("Failed to subscribe");
+export async function subscribeNewsletter({
+  email,
+  honeypot,
+}: NewsletterPayload): Promise<void> {
+  const url = process.env.NEXT_PUBLIC_NEWSLETTER_WEBHOOK;
+  if (!url) throw new Error("NEXT_PUBLIC_NEWSLETTER_WEBHOOK is not set");
 
-  void payload;
-  await new Promise((resolve) => setTimeout(resolve, 700));
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, honeypot }),
+  });
+  if (!res.ok) throw new Error("Failed to subscribe");
 }
