@@ -55,6 +55,7 @@ function validate(values: FormState): Errors {
 
 export function Contact() {
   const [values, setValues] = useState<FormState>(initialState);
+  const [honeypot, setHoneypot] = useState("");
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<"idle" | "loading" | "success">(
     "idle"
@@ -73,7 +74,7 @@ export function Contact() {
 
     setStatus("loading");
     try {
-      await submitContact(values);
+      await submitContact({ ...values, honeypot });
       setStatus("success");
     } catch {
       setStatus("idle");
@@ -232,6 +233,17 @@ export function Contact() {
                 </p>
               )}
             </div>
+
+            <input
+              type="text"
+              name="honeypot"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+              className="hidden"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden
+            />
 
             <div className="sm:col-span-2">
               <CtaButton
