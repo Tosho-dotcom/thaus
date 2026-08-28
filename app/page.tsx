@@ -4,6 +4,7 @@ import { TechStackStrip } from "@/components/TechStackStrip";
 import { About } from "@/components/About";
 import { HowItWorks } from "@/components/HowItWorks";
 import { Portfolio } from "@/components/Portfolio";
+import { Pricing } from "@/components/Pricing";
 import { FAQ } from "@/components/FAQ";
 import { Contact } from "@/components/Contact";
 import { Newsletter } from "@/components/Newsletter";
@@ -19,6 +20,7 @@ export default function Home() {
         <About />
         <HowItWorks />
         <Portfolio />
+        <Pricing />
         <FAQ />
         <Contact />
         <Newsletter />

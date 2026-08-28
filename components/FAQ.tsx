@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     q: "What does it cost?",
-    a: "Every project is scoped individually based on complexity. Get in touch and you'll get a clear quote — no generic package pricing.",
+    a: "See the Pricing section above for build options and ongoing support plans. Every project is still scoped individually — get in touch for an exact quote.",
   },
 ];
 
