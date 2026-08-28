@@ -111,6 +111,9 @@ const buildTiers: Tier[] = [
   },
 ];
 
+// Kept for when the monthly retainer group is switched back on (see the
+// commented-out block at the bottom of this file).
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const retainerTiers: Tier[] = [
   {
     id: "care",
@@ -292,19 +295,22 @@ export function Pricing() {
         ))}
       </StaggerGroup>
 
-      {/* ongoing retainers — deliberately lighter, secondary to the builds */}
-      <Reveal variants={fadeUp} className="mt-16 border-t border-line pt-10">
-        <p className="label">Keep it running — monthly</p>
-        <p className="mt-3 text-sm text-dim">
-          Optional, for systems already live. Not required to work together.
-        </p>
-      </Reveal>
+      {/* Monthly retainer group temporarily hidden. Tier data is kept in
+          `retainerTiers` above — to restore, render it back here:
 
-      <StaggerGroup className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-        {retainerTiers.map((tier) => (
-          <TierCard key={tier.id} tier={tier} compact />
-        ))}
-      </StaggerGroup>
+          <Reveal variants={fadeUp} className="mt-16 border-t border-line pt-10">
+            <p className="label">Keep it running — monthly</p>
+            <p className="mt-3 text-sm text-dim">
+              Optional, for systems already live. Not required to work together.
+            </p>
+          </Reveal>
+
+          <StaggerGroup className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
+            {retainerTiers.map((tier) => (
+              <TierCard key={tier.id} tier={tier} compact />
+            ))}
+          </StaggerGroup>
+      */}
     </Section>
   );
 }
