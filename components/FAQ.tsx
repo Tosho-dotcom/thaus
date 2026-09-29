@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     q: "What does it cost?",
-    a: "See the Pricing section above for build options and ongoing support plans. Every project is still scoped individually — get in touch for an exact quote.",
+    a: "Every project is scoped individually, depending on what you need built. See the Services section above for the options, then get in touch for a quote.",
   },
 ];
 

@@ -8,6 +8,10 @@ import { CtaLink } from "@/components/CtaButton";
 import { fadeUp, EASE } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
+// Prices are temporarily hidden — the cards list what each option includes.
+// Flip to true to show prices again (and restore the heading/intro copy below).
+const SHOW_PRICES = false;
+
 interface Tier {
   id: string;
   name: string;
@@ -217,24 +221,26 @@ function TierCard({
 
       {/* floor the price block so a wrapped period (e.g. "$1,500–2,500")
           doesn't push one card's body out of line with its neighbours */}
-      <p
-        className={cn(
-          "mt-4 flex flex-wrap items-baseline gap-x-2",
-          !compact && "min-h-[3.25rem]"
-        )}
-      >
-        <span
+      {SHOW_PRICES && (
+        <p
           className={cn(
-            "font-display font-bold tracking-[-0.02em]",
-            compact ? "text-2xl" : "text-3xl"
+            "mt-4 flex flex-wrap items-baseline gap-x-2",
+            !compact && "min-h-[3.25rem]"
           )}
         >
-          {tier.price}
-        </span>
-        {tier.period && (
-          <span className="font-mono text-xs text-dim">{tier.period}</span>
-        )}
-      </p>
+          <span
+            className={cn(
+              "font-display font-bold tracking-[-0.02em]",
+              compact ? "text-2xl" : "text-3xl"
+            )}
+          >
+            {tier.price}
+          </span>
+          {tier.period && (
+            <span className="font-mono text-xs text-dim">{tier.period}</span>
+          )}
+        </p>
+      )}
 
       <p className="mt-3 text-sm leading-relaxed text-dim">
         {tier.description}
@@ -274,22 +280,29 @@ export function Pricing() {
   return (
     <Section id="pricing">
       <Reveal variants={fadeUp} className="max-w-2xl">
-        <p className="label">Pricing</p>
+        <p className="label">Services</p>
         <h2 className="mt-3 text-[clamp(1.75rem,3.5vw,2.75rem)] font-bold tracking-[-0.02em]">
-          Pricing
+          What I can build for you
         </h2>
         <p className="mt-3 text-lg text-dim">
-          Two ways to work together: a complete system, built once — or ongoing
-          support to keep it running and growing.
+          From free templates to a fully custom business system. Every project
+          is scoped individually — get in touch for a quote.
         </p>
       </Reveal>
 
       {/* one-time build tiers — the primary offer */}
-      <Reveal variants={fadeUp} className="mt-12">
-        <p className="label">Build — one-time</p>
-      </Reveal>
+      {SHOW_PRICES && (
+        <Reveal variants={fadeUp} className="mt-12">
+          <p className="label">Build — one-time</p>
+        </Reveal>
+      )}
 
-      <StaggerGroup className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-[0.8fr_1fr_1fr_1fr]">
+      <StaggerGroup
+        className={cn(
+          "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-[0.8fr_1fr_1fr_1fr]",
+          SHOW_PRICES ? "mt-6" : "mt-12"
+        )}
+      >
         {buildTiers.map((tier) => (
           <TierCard key={tier.id} tier={tier} />
         ))}
