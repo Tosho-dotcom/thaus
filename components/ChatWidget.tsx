@@ -147,6 +147,7 @@ export default function ChatWidget() {
   const launcherRef = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   // Restore conversation after mount (sessionStorage is client-only).
   useEffect(() => {
@@ -181,6 +182,34 @@ export default function ChatWidget() {
     if (open) root.setAttribute("data-chat-open", "");
     else root.removeAttribute("data-chat-open");
     return () => root.removeAttribute("data-chat-open");
+  }, [open]);
+
+  // Mobile: keep the panel exactly above the on-screen keyboard.
+  useEffect(() => {
+    if (!open) return;
+    const vv = window.visualViewport;
+    const mq = window.matchMedia("(max-width: 639px)");
+    const panel = panelRef.current;
+    if (!vv || !panel) return;
+    const reset = () => {
+      panel.style.height = "";
+      panel.style.top = "";
+    };
+    const sync = () => {
+      if (!mq.matches) return reset();
+      panel.style.height = `${vv.height}px`;
+      panel.style.top = `${vv.offsetTop}px`;
+      const el = scrollRef.current;
+      if (el && document.activeElement === inputRef.current) el.scrollTop = el.scrollHeight;
+    };
+    sync();
+    vv.addEventListener("resize", sync);
+    vv.addEventListener("scroll", sync);
+    return () => {
+      vv.removeEventListener("resize", sync);
+      vv.removeEventListener("scroll", sync);
+      reset();
+    };
   }, [open]);
 
   // Focus management: input when opened, launcher when closed.
@@ -269,9 +298,10 @@ export default function ChatWidget() {
       <AnimatePresence>
         {open && (
           <motion.div
+            ref={panelRef}
             role="dialog"
             aria-label="Thaus assistant chat"
-            className="fixed inset-0 z-[60] flex flex-col bg-surface sm:inset-auto sm:right-4 sm:bottom-[144px] sm:h-[min(560px,calc(100dvh-160px))] sm:w-[380px] sm:rounded-xl sm:border sm:border-line sm:shadow-[0_12px_40px_rgba(0,0,0,0.45)] md:right-5 md:bottom-[152px] md:h-[min(560px,calc(100dvh-168px))]"
+            className="chat-panel fixed inset-0 z-[60] flex flex-col bg-surface sm:inset-auto sm:right-4 sm:bottom-[144px] sm:h-[min(560px,calc(100dvh-160px))] sm:w-[380px] sm:rounded-xl sm:border sm:border-line sm:shadow-[0_12px_40px_rgba(0,0,0,0.45)] md:right-5 md:bottom-[152px] md:h-[min(560px,calc(100dvh-168px))]"
             initial={reduceMotion ? false : { opacity: 0, y: 12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={
@@ -281,7 +311,7 @@ export default function ChatWidget() {
             }
             transition={panelTransition}
           >
-            <header className="flex items-center justify-between border-b border-line px-4 py-3">
+            <header className="flex shrink-0 items-center justify-between border-b border-line px-4 py-3">
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
                 <span className="font-mono text-xs uppercase tracking-widest text-ink">
@@ -302,7 +332,7 @@ export default function ChatWidget() {
               ref={scrollRef}
               role="log"
               aria-live="polite"
-              className="flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 py-4"
+              className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 py-4"
             >
               {[GREETING, ...messages].map((m) => (
                 <div
@@ -353,7 +383,7 @@ export default function ChatWidget() {
               )}
             </div>
 
-            <div className="border-t border-line px-4 pt-3 pb-3">
+            <div className="shrink-0 border-t border-line px-4 pt-3 pb-3">
               <div className="flex items-end gap-2">
                 <textarea
                   ref={inputRef}
@@ -364,7 +394,16 @@ export default function ChatWidget() {
                   aria-label="Message"
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={onKeyDown}
-                  className="max-h-24 min-h-9 flex-1 resize-none rounded-[10px] border border-line bg-bg px-3 py-2 text-sm leading-5 text-ink placeholder:text-dim focus:border-accent focus:outline-none"
+                  onFocus={() => {
+                    if (!window.matchMedia("(max-width: 639px)").matches) return;
+                    // wait for the keyboard to resize the viewport
+                    setTimeout(() => {
+                      const el = scrollRef.current;
+                      if (el) el.scrollTop = el.scrollHeight;
+                      inputRef.current?.scrollIntoView({ block: "nearest" });
+                    }, 300);
+                  }}
+                  className="chat-input max-h-24 min-h-9 flex-1 resize-none rounded-[10px] border border-line bg-bg px-3 py-2 text-sm leading-5 text-ink placeholder:text-dim focus:border-accent focus:outline-none"
                 />
                 <button
                   type="button"

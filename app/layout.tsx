@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
@@ -22,6 +22,12 @@ const gaMeasurementId = "G-D5RZMD9516";
 const title = "Thaus — Complete business systems, built in public.";
 const description =
   "Faceless digital product studio building complete business systems — web + automation — and documenting the process in the open.";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  interactiveWidget: "resizes-content",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
