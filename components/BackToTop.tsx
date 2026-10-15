@@ -21,7 +21,7 @@ export default function BackToTop() {
     <AnimatePresence>
       {visible && (
         <motion.div
-          className="fixed bottom-4 right-4 z-50 md:bottom-6 md:right-6"
+          className="back-to-top fixed bottom-4 right-4 z-50 md:bottom-6 md:right-6"
           initial={reduceMotion ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           exit={reduceMotion ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, y: 12 }}

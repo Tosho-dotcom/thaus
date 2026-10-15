@@ -3,6 +3,7 @@ import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import BackToTop from "@/components/BackToTop";
+import ChatWidget from "@/components/ChatWidget";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -61,6 +62,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-bg text-ink">
         {children}
         <BackToTop />
+        <ChatWidget />
       </body>
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}

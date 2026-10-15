@@ -195,3 +195,13 @@
     transform: none;
   }
 }
+
+/* Chat widget: on mobile the open chat is a full-screen sheet */
+@media (max-width: 639px) {
+  html[data-chat-open] .back-to-top {
+    display: none;
+  }
+  html[data-chat-open] body {
+    overflow: hidden;
+  }
+}
