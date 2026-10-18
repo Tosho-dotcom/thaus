@@ -7,7 +7,7 @@ business systems (web + automation) and documenting the process in the open.
 |---|---|
 | Repository | https://github.com/Tosho-dotcom/thaus (private) |
 | Default branch | `main` |
-| Production domain | `https://thaus.co` (set as `metadataBase` in `app/layout.tsx`; not deployed yet) |
+| Production domain | `https://thaus.co` (set as `metadataBase` in `app/layout.tsx`; deployed on Vercel) |
 | Package name | `thaus` v0.1.0, `private: true` |
 
 ## Stack
@@ -149,15 +149,8 @@ The site is a single page, so there are no route-change pageviews to forward.
 
 ## Known gaps
 
-- **Forms are not wired up.** `lib/webhooks.ts` contains UI-only stubs — both
-  `submitContact` and `subscribeNewsletter` just `await` a fake delay. The real
-  n8n webhook calls are sketched in comments; they need
-  `NEXT_PUBLIC_CONTACT_WEBHOOK` / `NEXT_PUBLIC_NEWSLETTER_WEBHOOK` env vars.
 - **Portfolio has one entry** (Zynnth) and `public/portfolio/zynnth.png` is a
   placeholder pending a real screenshot.
-- **Not deployed.** `thaus.co` is referenced in metadata but no hosting is set up
-  in this repo. The GA4 tag is live in the code but will not report real traffic
-  until the site is served from a public domain.
 - **Mobile hero is verified in an iframe, not on hardware.** The 390px-wide probe
   is faithful for CSS media queries and canvas output, but perceived brightness of
   a dim cobalt network on an OLED phone at low brightness is not something it can
@@ -171,18 +164,18 @@ the full history.
 
 ### 2026-08-03
 
-- **`6a206a0` — hero node network now visible on mobile.** It had always been
+- **hero node network now visible on mobile.** It had always been
   rendering on phones; the unmasked mobile veil's backdrop blur was erasing it,
   with a second scrim compounding it. So phones paid the full animation cost and
   saw nothing. Fixed by dropping the mobile blur, lightening the tint and scrim,
   and switching touch viewports to `StaticNetwork`. The hook's breakpoint also
   moved 767 → 1023 to match `lg`. Desktop unchanged. See "Hero graphic".
-- **`9aa33fb` — Google Analytics 4 added.** See "Analytics".
+- **Google Analytics 4 added.** See "Analytics".
 
 ### 2026-08-02
 
-- **`4c9cb55` — this file added.**
-- **`9ee2b75` — initial commit.**
+- **this file added.**
+- **initial commit.**
 
 ## Repo conventions
 
