@@ -4,6 +4,14 @@ import Script from "next/script";
 import "./globals.css";
 import BackToTop from "@/components/BackToTop";
 import ChatWidget from "@/components/ChatWidget";
+import { JsonLd } from "@/components/JsonLd";
+import {
+  siteDescription,
+  siteKeywords,
+  siteName,
+  siteTitle,
+  siteUrl,
+} from "@/lib/site";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -17,11 +25,13 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "700"],
 });
 
-const siteUrl = "https://thaus.co";
 const gaMeasurementId = "G-D5RZMD9516";
-const title = "Thaus — Complete business systems, built in public.";
-const description =
-  "Faceless digital product studio building complete business systems — web + automation — and documenting the process in the open.";
+const title = siteTitle;
+const description = siteDescription;
+const ogImage = {
+  url: "/og.png",
+  alt: "Thaus: complete business systems, built in public",
+};
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -33,6 +43,24 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title,
   description,
+  applicationName: siteName,
+  keywords: siteKeywords,
+  authors: [{ name: siteName, url: siteUrl }],
+  creator: siteName,
+  alternates: {
+    canonical: "/",
+    types: { "text/plain": "/llms.txt" },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },
@@ -43,15 +71,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: siteUrl,
+    siteName,
+    locale: "en_US",
     title,
     description,
-    images: ["/og.png"],
+    images: [ogImage],
   },
   twitter: {
     card: "summary_large_image",
     title,
     description,
-    images: ["/og.png"],
+    images: [ogImage],
   },
 };
 
@@ -66,6 +96,7 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-bg text-ink">
+        <JsonLd />
         {children}
         <BackToTop />
         <ChatWidget />

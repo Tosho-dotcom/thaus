@@ -12,6 +12,18 @@ export const fadeUp: Variants = {
   },
 };
 
+/**
+ * Movement without an opacity fade, for the hero headline: it is the LCP
+ * element, so it must be visible in the server-rendered HTML before hydration.
+ */
+export const riseUp: Variants = {
+  hidden: { y: 20 },
+  visible: {
+    y: 0,
+    transition: { duration: 0.6, ease: EASE },
+  },
+};
+
 export const fadeIn: Variants = {
   hidden: { opacity: 0 },
   visible: {

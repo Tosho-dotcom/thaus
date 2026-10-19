@@ -6,7 +6,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Section } from "@/components/Section";
 import { CtaLink } from "@/components/CtaButton";
 import { HeroGraphic } from "@/components/hero/HeroGraphic";
-import { fadeUp, staggerContainer } from "@/lib/motion";
+import { fadeUp, riseUp, staggerContainer } from "@/lib/motion";
 
 export function Hero() {
   const shouldReduceMotion = useReducedMotion();
@@ -66,7 +66,7 @@ export function Hero() {
           </motion.p>
 
           <motion.h1
-            variants={fadeUp}
+            variants={riseUp}
             className="text-[clamp(2.75rem,6vw,5rem)] font-bold leading-[1.02] tracking-[-0.03em]"
           >
             Complete business systems, built in public.
@@ -80,8 +80,9 @@ export function Hero() {
             variants={fadeUp}
             className="max-w-xl text-lg leading-relaxed text-dim md:text-xl"
           >
-            We build the whole thing — website, automations, CRM, and the
-            growth engine behind it. Then we document every step in the open.
+            We build the whole thing for service businesses — website,
+            booking and lead automation, CRM, AI chat, and the growth engine
+            behind it. Then we document every step in the open.
           </motion.p>
 
           <motion.div variants={fadeUp} className="flex flex-wrap gap-4 pt-2">

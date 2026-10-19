@@ -204,14 +204,14 @@ function TierCard({
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <h4
+        <h3
           className={cn(
             "font-display font-medium",
             compact ? "text-lg" : "text-xl"
           )}
         >
           {tier.name}
-        </h4>
+        </h3>
         {tier.badge && (
           <span className="shrink-0 rounded-tag border border-accent/30 bg-accent/10 px-2 py-1 font-mono text-[0.6rem] uppercase tracking-[0.1em] text-accent">
             {tier.badge}

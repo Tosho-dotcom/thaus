@@ -1,38 +1,12 @@
 "use client";
 
 import { useId, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { Section } from "@/components/Section";
 import { Reveal, StaggerGroup } from "@/components/Reveal";
 import { fadeUp, EASE } from "@/lib/motion";
-
-const faqs = [
-  {
-    q: "What exactly do you build?",
-    a: "A complete business system — website, automation (email, CRM, reminders, newsletter), and the infrastructure behind it. Not just a landing page.",
-  },
-  {
-    q: "How long does a project take?",
-    a: "Most complete systems take 2–4 weeks from brief to launch, documented the whole way.",
-  },
-  {
-    q: "Do you build for my industry?",
-    a: "I build for local and service businesses — clinics, agencies, real estate, and more. If you're not sure it fits, just ask.",
-  },
-  {
-    q: "What's included in the automation side?",
-    a: "Contact forms, booking flows, confirmation emails, reminders, lead databases, and newsletter systems — wired together with tools like n8n and Notion, not bolted on separately.",
-  },
-  {
-    q: "Can I see real examples?",
-    a: "Yes — every project is documented in public. Check the Work section above, or follow the Build Log newsletter.",
-  },
-  {
-    q: "What does it cost?",
-    a: "Every project is scoped individually, depending on what you need built. See the Services section above for the options, then get in touch for a quote.",
-  },
-];
+import { faqs } from "@/lib/site";
 
 export function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -86,25 +60,27 @@ export function FAQ() {
                 </button>
               </h3>
 
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div
-                    key="panel"
-                    id={panelId}
-                    role="region"
-                    aria-labelledby={triggerId}
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration, ease: EASE }}
-                    className="overflow-hidden"
-                  >
-                    <p className="border-t border-line px-6 pb-5 pt-5 text-base leading-relaxed text-dim">
-                      {faq.a}
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {/* The answer stays in the DOM when collapsed so search engines
+                  and AI crawlers can read every answer without clicking. */}
+              <motion.div
+                id={panelId}
+                role="region"
+                aria-labelledby={triggerId}
+                aria-hidden={!isOpen}
+                inert={!isOpen}
+                initial={false}
+                animate={
+                  isOpen
+                    ? { height: "auto", opacity: 1 }
+                    : { height: 0, opacity: 0 }
+                }
+                transition={{ duration, ease: EASE }}
+                className="overflow-hidden"
+              >
+                <p className="border-t border-line px-6 pb-5 pt-5 text-base leading-relaxed text-dim">
+                  {faq.a}
+                </p>
+              </motion.div>
             </motion.div>
           );
         })}
