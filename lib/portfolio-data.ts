@@ -16,7 +16,7 @@ export const portfolioItems: PortfolioItem[] = [
     title: "Zynnth",
     url: "https://zynnth.com",
     description:
-      "AI-generated video ads and UGC content for e-commerce brands, delivered in days instead of weeks.",
+      "A site for an AI video ad agency that sells without a single sales call. Visitors watch sample ads, compare flat package prices and get every common question answered on the page, then pick a package and send a brief in under five minutes. The owner gets a ready-to-start order instead of a discovery call, and every newsletter sign-up gets a welcome email automatically.",
     tags: ["Web", "AI Video", "E-commerce"],
     thumbnail: "/portfolio/zynnth.png",
     status: "Live",
