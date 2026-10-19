@@ -69,7 +69,7 @@ export function Hero() {
             variants={riseUp}
             className="text-[clamp(2.75rem,6vw,5rem)] font-bold leading-[1.02] tracking-[-0.03em]"
           >
-            Complete business systems, built in public.
+            More clients. Less busywork.
             <span
               aria-hidden
               className="cursor-blink ml-2 inline-block h-[0.8em] w-[0.5em] translate-y-[0.08em] bg-accent align-middle"
@@ -80,9 +80,10 @@ export function Hero() {
             variants={fadeUp}
             className="max-w-xl text-lg leading-relaxed text-dim md:text-xl"
           >
-            We build the whole thing for service businesses — website,
-            booking and lead automation, CRM, AI chat, and the growth engine
-            behind it. Then we document every step in the open.
+            Your website books the appointments, answers questions and follows
+            up with every lead, day and night. You get hours back every week
+            and spend them on clients, not admin. We set it all up for you,
+            start to finish.
           </motion.p>
 
           <motion.div variants={fadeUp} className="flex flex-wrap gap-4 pt-2">
