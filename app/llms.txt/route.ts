@@ -46,8 +46,6 @@ Next.js, TypeScript, Tailwind CSS, n8n, Notion, Claude, Vercel, GitHub.
 ## Work
 
 ${portfolioItems.map((p) => `- [${p.title}](${p.url}): ${p.description} (${p.status})`).join("\n")}
-- Project #001, in progress: a complete system for a med spa.
-
 ## FAQ
 
 ${faqs.map((f) => `### ${f.q}\n\n${f.a}`).join("\n\n")}

@@ -149,8 +149,8 @@ The site is a single page, so there are no route-change pageviews to forward.
 
 ## Known gaps
 
-- **Portfolio has one entry** (Zynnth) and `public/portfolio/zynnth.png` is a
-  placeholder pending a real screenshot.
+- **Portfolio has two entries** (Zynnth, Velure demo). `public/portfolio/zynnth.png`
+  is a placeholder pending a real screenshot.
 - **Mobile hero is verified in an iframe, not on hardware.** The 390px-wide probe
   is faithful for CSS media queries and canvas output, but perceived brightness of
   a dim cobalt network on an OLED phone at low brightness is not something it can

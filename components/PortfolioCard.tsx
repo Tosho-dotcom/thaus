@@ -9,7 +9,8 @@ import { fadeUp, EASE } from "@/lib/motion";
 import type { PortfolioItem } from "@/lib/portfolio-data";
 
 function StatusChip({ status }: { status: PortfolioItem["status"] }) {
-  const isLive = status === "Live";
+  // A demo is a working site too, so it gets the same live styling.
+  const isLive = status !== "In progress";
   return (
     <span
       className={cn(
@@ -88,7 +89,7 @@ export function PortfolioCard({ item }: { item: PortfolioItem }) {
           rel="noopener noreferrer"
           className="group/link mt-2 inline-flex w-fit items-center gap-1.5 font-mono text-xs uppercase tracking-[0.1em] text-ink transition-colors hover:text-accent"
         >
-          Visit site
+          {item.status === "Demo" ? "Try the demo" : "Visit site"}
           <ArrowUpRight
             size={14}
             strokeWidth={1.5}
