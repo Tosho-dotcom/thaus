@@ -1,277 +1,328 @@
 "use client";
 
+import { useState, type FormEvent, type ReactNode } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, ArrowUpRight, Check, type LucideIcon } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 import { Section } from "@/components/Section";
 import { Reveal, StaggerGroup } from "@/components/Reveal";
-import { CtaLink } from "@/components/CtaButton";
+import { CtaButton, CtaLink } from "@/components/CtaButton";
+import { Input } from "@/components/ui/input";
 import { fadeUp, EASE } from "@/lib/motion";
+import { selectPlan, type ProjectType } from "@/lib/plan-select";
+import { requestBlueprint } from "@/lib/webhooks";
 import { cn } from "@/lib/utils";
 
-// Prices are temporarily hidden — the cards list what each option includes.
-// Flip to true to show prices again (and restore the heading/intro copy below).
-const SHOW_PRICES = false;
+const templateCheckoutUrl = process.env.NEXT_PUBLIC_TEMPLATE_CHECKOUT_URL;
 
-interface Tier {
+interface Plan {
   id: string;
   name: string;
   price: string;
-  period?: string;
-  description: string;
-  features: string[];
-  cta: {
-    label: string;
-    icon: LucideIcon;
-    variant: "filled" | "outline";
-    href: string;
-    external?: boolean;
-  };
+  pricePeriod?: string;
+  strikePrice?: string;
+  priceNote: string;
   badge?: string;
+  description: string;
+  featuresIntro?: string;
+  features: string[];
+  cta?: {
+    label: string;
+    variant: "filled" | "outline";
+    preselect: ProjectType;
+  };
+  finePrint?: string;
   highlight?: boolean;
+  /** Grid placement: mobile stacks Full Haus → Foundation → Blueprint,
+      tablet puts Full Haus full-width on top, desktop reads left to right. */
+  placement: string;
 }
 
-const buildTiers: Tier[] = [
+const plans: Plan[] = [
   {
-    id: "free",
-    name: "Free",
-    price: "$0",
+    id: "blueprint",
+    name: "Blueprint",
+    price: "Free",
+    priceNote: "for your email",
     description:
-      "Checklists, workflow templates, and documentation examples from real builds.",
+      "The exact blueprint behind a Thaus system — plus a ready-made n8n newsletter signup workflow.",
     features: [
-      "Public GitHub examples",
-      "n8n workflow templates",
-      "Build documentation",
+      "Build document: stack, architecture, process",
+      "n8n workflow: newsletter signup → database",
+      "What to automate next (and how)",
     ],
-    cta: {
-      label: "Browse on GitHub",
-      icon: ArrowUpRight,
-      variant: "outline",
-      href: "https://github.com/thaus-co",
-      external: true,
-    },
+    placement: "order-3 lg:order-1",
   },
   {
-    id: "template",
-    name: "Template",
-    price: "$49",
-    period: "one-time",
+    id: "foundation",
+    name: "Foundation",
+    price: "$990",
+    strikePrice: "$1,490",
+    priceNote: "one-time + $29/mo hosting",
+    badge: "Launch price · first 5 clients",
     description:
-      "A ready-made website template plus the automation workflow and setup guide behind it.",
+      "A professional website that works from day one — with the contact form and newsletter signup already automated.",
     features: [
-      "Website template (source code)",
-      "n8n workflow included",
-      "Setup documentation",
-      "Self-install",
+      "Custom website (one-page or up to 5 pages)",
+      "Contact form automation: notification + auto-reply",
+      "Newsletter signup → subscriber database",
+      "Domain connection, SSL, basic SEO, analytics",
+      "Hosted and monitored on Thaus infrastructure",
+      "10 days of support after launch",
+      "Live in 1–2 weeks",
     ],
     cta: {
-      label: "Get started",
-      icon: ArrowRight,
+      label: "Start with Foundation",
       variant: "outline",
-      href: "#contact",
+      preselect: "Foundation",
     },
+    placement: "order-2",
   },
   {
-    id: "starter",
-    name: "Starter Kit",
-    price: "$299–499",
-    period: "one-time",
+    id: "fullhaus",
+    name: "Full Haus",
+    price: "$249",
+    pricePeriod: "/mo",
+    priceNote: "+ $1,490 one-time setup · or $2,490/year (2 months free)",
+    badge: "Most complete",
     description:
-      "A complete, ready-to-deploy system — website and automation, configured and handed off.",
+      "The complete system — website, automation and AI — built, run and improved for you every month.",
+    featuresIntro: "Everything in Foundation, plus:",
     features: [
-      "Full website build",
-      "Core automation wired (contact + notifications)",
-      "Deployment included",
-      "Basic documentation & handoff",
+      "Welcome email for new subscribers",
+      "Weekly AI-written newsletter, sent from your domain",
+      "Booking or business-specific automation",
+      "AI chat assistant trained on your business",
+      "Monthly report: leads, bookings, subscribers, chats",
+      "Ongoing maintenance — up to 2 hours of changes/month",
     ],
     cta: {
-      label: "Get started",
-      icon: ArrowRight,
-      variant: "outline",
-      href: "#contact",
-    },
-  },
-  {
-    id: "custom",
-    name: "Custom",
-    price: "$1,500–2,500",
-    period: "one-time",
-    description:
-      "A fully custom business system — website, complete automation, CRM, and everything documented along the way.",
-    features: [
-      "Fully custom design & build",
-      "Full automation suite (forms, reminders, CRM, newsletter)",
-      "Deployment + domain setup",
-      "Documented build process",
-      "Priority support during build",
-    ],
-    cta: {
-      label: "Start a project",
-      icon: ArrowRight,
+      label: "Get the Full Haus",
       variant: "filled",
-      href: "#contact",
+      preselect: "Full Haus",
     },
-    badge: "Most requested",
+    finePrint: "3-month minimum, then month-to-month.",
     highlight: true,
+    placement: "order-1 md:col-span-2 lg:col-span-1 lg:order-3",
   },
 ];
 
-// Kept for when the monthly retainer group is switched back on (see the
-// commented-out block at the bottom of this file).
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const retainerTiers: Tier[] = [
-  {
-    id: "care",
-    name: "Care",
-    price: "From $149",
-    period: "/mo",
-    description:
-      "Keep the website running smoothly — updates, backups, and monitoring.",
-    features: [
-      "Uptime & performance monitoring",
-      "Updates & small fixes",
-      "Monthly check-in report",
-    ],
-    cta: {
-      label: "Ask about Care",
-      icon: ArrowRight,
-      variant: "outline",
-      href: "#contact",
-    },
-  },
-  {
-    id: "automate",
-    name: "Automate",
-    price: "From $399",
-    period: "/mo",
-    description:
-      "Everything in Care, plus ongoing automation monitoring and small improvements.",
-    features: [
-      "Everything in Care",
-      "Automation monitoring & fixes",
-      "Small workflow improvements monthly",
-      "Priority response",
-    ],
-    cta: {
-      label: "Ask about Automate",
-      icon: ArrowRight,
-      variant: "outline",
-      href: "#contact",
-    },
-    badge: "Most popular",
-    highlight: true,
-  },
-  {
-    id: "grow",
-    name: "Grow",
-    price: "From $899",
-    period: "/mo",
-    description:
-      "A hands-on partner for the system — new automations, added capacity, and a monthly strategy call.",
-    features: [
-      "Everything in Automate",
-      "New automation built monthly",
-      "Monthly strategy call",
-      "Fastest priority support",
-    ],
-    cta: {
-      label: "Ask about Grow",
-      icon: ArrowRight,
-      variant: "outline",
-      href: "#contact",
-    },
-  },
-];
+function validEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
 
-function TierCard({
-  tier,
-  compact = false,
-  className,
-}: {
-  tier: Tier;
-  compact?: boolean;
-  className?: string;
-}) {
+function BlueprintForm() {
+  const [email, setEmail] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "waitlist"
+  >("idle");
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!email.trim() || !validEmail(email)) {
+      setError("Enter a valid email address.");
+      return;
+    }
+    setError(null);
+    setStatus("loading");
+    try {
+      const { fallback } = await requestBlueprint({ email, honeypot });
+      setStatus(fallback ? "waitlist" : "success");
+    } catch {
+      setStatus("idle");
+      setError("Something went wrong. Please try again.");
+    }
+  }
+
+  if (status === "success" || status === "waitlist") {
+    return (
+      <motion.p
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        role="status"
+        className="mt-6 text-sm leading-relaxed text-ink"
+      >
+        {status === "success"
+          ? "Check your inbox — the Blueprint is on its way."
+          : "You're on the list — the Blueprint lands in your inbox as soon as it's published."}
+      </motion.p>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} noValidate className="mt-6 flex flex-col gap-2">
+      <label htmlFor="blueprint-email" className="sr-only">
+        Email
+      </label>
+      <Input
+        id="blueprint-email"
+        type="email"
+        required
+        placeholder="you@email.com"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? "blueprint-error" : undefined}
+        className="h-9 rounded-control border-line bg-transparent px-3 text-ink placeholder:text-dim focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/40"
+      />
+      <input
+        type="text"
+        name="honeypot"
+        value={honeypot}
+        onChange={(e) => setHoneypot(e.target.value)}
+        className="hidden"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden
+      />
+      <CtaButton
+        type="submit"
+        variant="outline"
+        size="sm"
+        icon={ArrowRight}
+        disabled={status === "loading"}
+        className="w-full"
+      >
+        {status === "loading" ? "Sending…" : "Send me the Blueprint"}
+      </CtaButton>
+      {error && (
+        <p id="blueprint-error" className="text-xs text-destructive">
+          {error}
+        </p>
+      )}
+    </form>
+  );
+}
+
+function TemplateLine() {
+  return (
+    <div className="mt-5 border-t border-line pt-4">
+      {templateCheckoutUrl ? (
+        <a
+          href={templateCheckoutUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group/tpl inline-flex items-start gap-1 text-sm text-ink transition-colors hover:text-accent"
+        >
+          Want the full site code? Get the Template — $49
+          <ArrowUpRight
+            size={16}
+            strokeWidth={1.5}
+            className="mt-0.5 shrink-0 transition-transform duration-200 group-hover/tpl:-translate-y-0.5 group-hover/tpl:translate-x-0.5"
+            aria-hidden
+          />
+        </a>
+      ) : (
+        <p className="text-sm text-dim">
+          Template (full site code) — $49 · coming soon
+        </p>
+      )}
+      <p className="mt-1.5 font-mono text-[0.7rem] leading-relaxed text-dim">
+        Code only, no automations or setup. $49 is credited toward Foundation
+        within 30 days.
+      </p>
+    </div>
+  );
+}
+
+function PlanCard({ plan, children }: { plan: Plan; children?: ReactNode }) {
   return (
     <motion.div
       variants={fadeUp}
       whileHover={{ y: -4 }}
       transition={{ duration: 0.25, ease: EASE }}
       className={cn(
-        "flex flex-col rounded-card border bg-surface transition-colors duration-250 hover:border-accent",
-        tier.highlight ? "border-accent" : "border-line",
-        compact ? "p-5" : "p-6",
-        className
+        "flex flex-col rounded-card border bg-surface p-6 transition-colors duration-250 hover:border-accent",
+        plan.highlight ? "border-accent" : "border-line",
+        plan.placement
       )}
     >
-      <div className="flex items-start justify-between gap-2">
-        <h3
-          className={cn(
-            "font-display font-medium",
-            compact ? "text-lg" : "text-xl"
-          )}
-        >
-          {tier.name}
-        </h3>
-        {tier.badge && (
-          <span className="shrink-0 rounded-tag border border-accent/30 bg-accent/10 px-2 py-1 font-mono text-[0.6rem] uppercase tracking-[0.1em] text-accent">
-            {tier.badge}
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <h3 className="font-display text-xl font-medium">{plan.name}</h3>
+        {plan.badge && (
+          <span className="rounded-tag border border-accent/30 bg-accent/10 px-2 py-1 font-mono text-[0.6rem] uppercase tracking-[0.1em] text-accent">
+            {plan.badge}
           </span>
         )}
       </div>
 
-      {/* floor the price block so a wrapped period (e.g. "$1,500–2,500")
-          doesn't push one card's body out of line with its neighbours */}
-      {SHOW_PRICES && (
-        <p
+      {/* floor the price block so a wrapped note (Full Haus) doesn't push
+          one card's body out of line with its neighbours */}
+      <div className="mt-4 lg:min-h-[5.25rem]">
+        <p className="flex flex-wrap items-baseline gap-x-2">
+          <span className="font-display text-3xl font-bold tracking-[-0.02em]">
+            {plan.price}
+          </span>
+          {plan.pricePeriod && (
+            <span className="-ml-1.5 font-mono text-xs text-dim">
+              {plan.pricePeriod}
+            </span>
+          )}
+          {plan.strikePrice && (
+            <span className="font-display text-lg text-dim line-through">
+              <span className="sr-only">Regular price </span>
+              {plan.strikePrice}
+            </span>
+          )}
+        </p>
+        <p className="mt-1.5 font-mono text-xs leading-relaxed text-dim">
+          {plan.priceNote}
+        </p>
+      </div>
+
+      <p className="mt-3 text-sm leading-relaxed text-dim">
+        {plan.description}
+      </p>
+
+      <div className="mt-5 flex-1">
+        {plan.featuresIntro && (
+          <p className="mb-3 font-mono text-xs text-ink">
+            {plan.featuresIntro}
+          </p>
+        )}
+        <ul
           className={cn(
-            "mt-4 flex flex-wrap items-baseline gap-x-2",
-            !compact && "min-h-[3.25rem]"
+            "flex flex-col gap-2.5",
+            plan.highlight && "md:grid md:grid-cols-2 md:gap-x-6 lg:flex"
           )}
         >
-          <span
-            className={cn(
-              "font-display font-bold tracking-[-0.02em]",
-              compact ? "text-2xl" : "text-3xl"
-            )}
-          >
-            {tier.price}
-          </span>
-          {tier.period && (
-            <span className="font-mono text-xs text-dim">{tier.period}</span>
-          )}
+          {plan.features.map((feature) => (
+            <li key={feature} className="flex items-start gap-2">
+              <Check
+                size={14}
+                strokeWidth={1.5}
+                className="mt-0.5 shrink-0 text-accent"
+                aria-hidden
+              />
+              <span className="font-mono text-xs leading-relaxed text-dim">
+                {feature}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {plan.cta && (
+        <CtaLink
+          href="#contact"
+          onClick={() => selectPlan(plan.cta!.preselect)}
+          variant={plan.cta.variant}
+          size="sm"
+          icon={ArrowRight}
+          className="mt-6 w-full"
+        >
+          {plan.cta.label}
+        </CtaLink>
+      )}
+      {plan.finePrint && (
+        <p className="mt-3 text-center font-mono text-[0.7rem] text-dim">
+          {plan.finePrint}
         </p>
       )}
 
-      <p className="mt-3 text-sm leading-relaxed text-dim">
-        {tier.description}
-      </p>
-
-      <ul className="mt-5 flex flex-1 flex-col gap-2.5">
-        {tier.features.map((feature) => (
-          <li key={feature} className="flex items-start gap-2">
-            <Check
-              size={14}
-              strokeWidth={1.5}
-              className="mt-0.5 shrink-0 text-accent"
-              aria-hidden
-            />
-            <span className="font-mono text-xs leading-relaxed text-dim">
-              {feature}
-            </span>
-          </li>
-        ))}
-      </ul>
-
-      <CtaLink
-        href={tier.cta.href}
-        external={tier.cta.external}
-        variant={tier.cta.variant}
-        size="sm"
-        icon={tier.cta.icon}
-        className="mt-6 w-full"
-      >
-        {tier.cta.label}
-      </CtaLink>
+      {children}
     </motion.div>
   );
 }
@@ -280,50 +331,59 @@ export function Pricing() {
   return (
     <Section id="pricing">
       <Reveal variants={fadeUp} className="max-w-2xl">
-        <p className="label">Services</p>
+        <p className="label">Pricing</p>
         <h2 className="mt-3 text-[clamp(1.75rem,3.5vw,2.75rem)] font-bold tracking-[-0.02em]">
-          What I can build for you
+          From blueprint to a system that runs itself.
         </h2>
         <p className="mt-3 text-lg text-dim">
-          From free templates to a fully custom business system. Every project
-          is scoped individually — get in touch for a quote.
+          Start free, launch a solid foundation, or get the full house —
+          website, automation and AI, maintained for you.
         </p>
       </Reveal>
 
-      {/* one-time build tiers — the primary offer */}
-      {SHOW_PRICES && (
-        <Reveal variants={fadeUp} className="mt-12">
-          <p className="label">Build — one-time</p>
-        </Reveal>
-      )}
-
-      <StaggerGroup
-        className={cn(
-          "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-[0.8fr_1fr_1fr_1fr]",
-          SHOW_PRICES ? "mt-6" : "mt-12"
-        )}
-      >
-        {buildTiers.map((tier) => (
-          <TierCard key={tier.id} tier={tier} />
+      <StaggerGroup className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {plans.map((plan) => (
+          <PlanCard key={plan.id} plan={plan}>
+            {plan.id === "blueprint" && (
+              <>
+                <BlueprintForm />
+                <TemplateLine />
+              </>
+            )}
+          </PlanCard>
         ))}
       </StaggerGroup>
 
-      {/* Monthly retainer group temporarily hidden. Tier data is kept in
-          `retainerTiers` above — to restore, render it back here:
-
-          <Reveal variants={fadeUp} className="mt-16 border-t border-line pt-10">
-            <p className="label">Keep it running — monthly</p>
-            <p className="mt-3 text-sm text-dim">
-              Optional, for systems already live. Not required to work together.
+      <Reveal variants={fadeUp} className="mt-6">
+        <div className="flex flex-col gap-6 rounded-card border border-line bg-surface p-6 transition-colors duration-250 hover:border-accent md:flex-row md:items-center md:justify-between md:gap-10">
+          <div className="max-w-2xl">
+            <p className="label">Custom</p>
+            <h3 className="mt-2 font-display text-xl font-medium">
+              Bigger plans? Your servers, your rules.
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-dim">
+              Hosting on your own infrastructure, weekly reporting, SLA,
+              integrations (CRM, payments, calendars), multiple AI agents.
+              Projects from $3,000.
             </p>
-          </Reveal>
+          </div>
+          <CtaLink
+            href="#contact"
+            onClick={() => selectPlan("Custom")}
+            variant="outline"
+            size="sm"
+            icon={ArrowRight}
+            className="shrink-0 self-start md:self-auto"
+          >
+            Book a call
+          </CtaLink>
+        </div>
 
-          <StaggerGroup className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-            {retainerTiers.map((tier) => (
-              <TierCard key={tier.id} tier={tier} compact />
-            ))}
-          </StaggerGroup>
-      */}
+        <p className="mt-6 font-mono text-xs text-dim">
+          Prices in USD. Your domain always stays yours. Final scope confirmed
+          after a short call.
+        </p>
+      </Reveal>
     </Section>
   );
 }

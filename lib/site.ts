@@ -33,24 +33,24 @@ export const socialLinks = {
 
 export const services = [
   {
-    name: "Free templates and examples",
+    name: "Blueprint",
     description:
-      "Checklists, n8n workflow templates and build documentation from real projects, published on GitHub.",
+      "Free: the build document behind a Thaus system (stack, architecture, process) plus a ready-made n8n newsletter signup workflow.",
   },
   {
-    name: "Website template with automation",
+    name: "Foundation",
     description:
-      "A ready-made website template plus the n8n automation workflow and setup guide behind it, for self-install.",
+      "A custom website (one page or up to 5 pages) with contact form automation and newsletter signup, domain, SSL, basic SEO and analytics, hosted and monitored. Launch price $990 one-time plus $29/month hosting.",
   },
   {
-    name: "Starter Kit",
+    name: "Full Haus",
     description:
-      "A complete, ready-to-deploy system: website build, core contact and notification automation, deployment and handoff documentation.",
+      "Everything in Foundation plus a welcome email, a weekly AI-written newsletter, booking or business-specific automation, an AI chat assistant, monthly reports and ongoing maintenance. $1,490 setup plus $249/month.",
   },
   {
-    name: "Custom business system",
+    name: "Custom",
     description:
-      "A fully custom website with a complete automation suite (forms, booking, reminders, CRM, newsletter), deployment, domain setup and a documented build process.",
+      "Hosting on your own infrastructure, weekly reporting, SLA, integrations (CRM, payments, calendars) and multiple AI agents. Projects from $3,000.",
   },
 ];
 
@@ -85,6 +85,18 @@ export const faqs = [
   },
   {
     q: "What does it cost?",
-    a: "Every project is scoped individually, depending on what you need built. See the Services section above for the options, then get in touch for a quote.",
+    a: "Blueprint is free. Foundation is a one-time build (launch price $990) plus $29/month hosting. Full Haus is $1,490 setup plus $249/month, including maintenance, AI and monthly reports. Bigger projects start at $3,000 — see Pricing above.",
+  },
+  {
+    q: "Where is my website hosted?",
+    a: "Foundation and Full Haus run on Thaus infrastructure (Vercel and our automation server), monitored and kept up to date. If you need everything on your own servers, that's the Custom plan.",
+  },
+  {
+    q: "Do I own my website?",
+    a: "Yes. Your domain is always yours, and after full payment you own your site's content, design and code. If you ever leave, you get your code and an export of your automations.",
+  },
+  {
+    q: "Can I cancel Full Haus?",
+    a: "After the 3-month minimum it's month-to-month with 30 days' notice.",
   },
 ];

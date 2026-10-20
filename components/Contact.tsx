@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useEffect, useId, useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import { Send } from "lucide-react";
 import { Section } from "@/components/Section";
@@ -10,14 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { fadeUp } from "@/lib/motion";
 import { submitContact } from "@/lib/webhooks";
+import { onPlanSelect, projectTypes } from "@/lib/plan-select";
 import { cn } from "@/lib/utils";
-
-const projectTypes = [
-  "Website",
-  "Automation system",
-  "Full business system",
-  "Not sure yet",
-];
 
 const fieldClasses =
   "rounded-control border-line bg-transparent text-ink placeholder:text-dim focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/40";
@@ -61,6 +55,16 @@ export function Contact() {
     "idle"
   );
   const formHeadingId = useId();
+
+  // pricing CTAs pick the matching option on their way down to the form
+  useEffect(
+    () =>
+      onPlanSelect((plan) => {
+        setValues((prev) => ({ ...prev, projectType: plan }));
+        setErrors((prev) => ({ ...prev, projectType: undefined }));
+      }),
+    []
+  );
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setValues((prev) => ({ ...prev, [key]: value }));
