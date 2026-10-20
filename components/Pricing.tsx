@@ -14,6 +14,11 @@ import { cn } from "@/lib/utils";
 
 const templateCheckoutUrl = process.env.NEXT_PUBLIC_TEMPLATE_CHECKOUT_URL;
 
+// Plans are temporarily hidden while the offer is being finalised — the
+// section shows only its heading and a link to the contact form. Flip to true
+// to bring back the cards, the Custom bar and the footnote.
+const SHOW_PLANS = false;
+
 interface Plan {
   id: string;
   name: string;
@@ -152,7 +157,11 @@ function BlueprintForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="mt-6 flex flex-col gap-2">
+    <form
+      onSubmit={handleSubmit}
+      noValidate
+      className="mt-6 flex flex-col gap-2"
+    >
       <label htmlFor="blueprint-email" className="sr-only">
         Email
       </label>
@@ -341,49 +350,61 @@ export function Pricing() {
         </p>
       </Reveal>
 
-      <StaggerGroup className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {plans.map((plan) => (
-          <PlanCard key={plan.id} plan={plan}>
-            {plan.id === "blueprint" && (
-              <>
-                <BlueprintForm />
-                <TemplateLine />
-              </>
-            )}
-          </PlanCard>
-        ))}
-      </StaggerGroup>
-
-      <Reveal variants={fadeUp} className="mt-6">
-        <div className="flex flex-col gap-6 rounded-card border border-line bg-surface p-6 transition-colors duration-250 hover:border-accent md:flex-row md:items-center md:justify-between md:gap-10">
-          <div className="max-w-2xl">
-            <p className="label">Custom</p>
-            <h3 className="mt-2 font-display text-xl font-medium">
-              Bigger plans? Your servers, your rules.
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed text-dim">
-              Hosting on your own infrastructure, weekly reporting, SLA,
-              integrations (CRM, payments, calendars), multiple AI agents.
-              Projects from $3,000.
-            </p>
-          </div>
-          <CtaLink
-            href="#contact"
-            onClick={() => selectPlan("Custom")}
-            variant="outline"
-            size="sm"
-            icon={ArrowRight}
-            className="shrink-0 self-start md:self-auto"
-          >
-            Book a call
+      {!SHOW_PLANS && (
+        <Reveal variants={fadeUp} className="mt-8">
+          <CtaLink href="#contact" icon={ArrowRight}>
+            Get in touch
           </CtaLink>
-        </div>
+        </Reveal>
+      )}
 
-        <p className="mt-6 font-mono text-xs text-dim">
-          Prices in USD. Your domain always stays yours. Final scope confirmed
-          after a short call.
-        </p>
-      </Reveal>
+      {SHOW_PLANS && (
+        <>
+          <StaggerGroup className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {plans.map((plan) => (
+              <PlanCard key={plan.id} plan={plan}>
+                {plan.id === "blueprint" && (
+                  <>
+                    <BlueprintForm />
+                    <TemplateLine />
+                  </>
+                )}
+              </PlanCard>
+            ))}
+          </StaggerGroup>
+
+          <Reveal variants={fadeUp} className="mt-6">
+            <div className="flex flex-col gap-6 rounded-card border border-line bg-surface p-6 transition-colors duration-250 hover:border-accent md:flex-row md:items-center md:justify-between md:gap-10">
+              <div className="max-w-2xl">
+                <p className="label">Custom</p>
+                <h3 className="mt-2 font-display text-xl font-medium">
+                  Bigger plans? Your servers, your rules.
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-dim">
+                  Hosting on your own infrastructure, weekly reporting, SLA,
+                  integrations (CRM, payments, calendars), multiple AI agents.
+                  Projects from $3,000.
+                </p>
+              </div>
+              <CtaLink
+                href="#contact"
+                onClick={() => selectPlan("Custom")}
+                variant="outline"
+                size="sm"
+                icon={ArrowRight}
+                className="shrink-0 self-start md:self-auto"
+              >
+                Book a call
+              </CtaLink>
+            </div>
+
+            <p className="mt-6 font-mono text-xs text-dim">
+              Prices in USD. Your domain always stays yours. Final scope
+              confirmed after a short call.
+            </p>
+          </Reveal>
+        </>
+      )}
     </Section>
   );
 }
