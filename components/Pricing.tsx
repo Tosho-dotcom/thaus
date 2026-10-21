@@ -167,6 +167,9 @@ function BlueprintForm() {
         aria-describedby={error ? "blueprint-error" : undefined}
         className="h-9 rounded-control border-line bg-transparent px-3 text-ink placeholder:text-dim focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/40"
       />
+      <p className="text-xs text-dim">
+        You&apos;ll also get the weekly Build Log. Unsubscribe anytime.
+      </p>
       <input
         type="text"
         name="honeypot"
