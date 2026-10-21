@@ -1,0 +1,221 @@
+{
+  "name": "Thaus Blueprint — Newsletter Signup",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "newsletter-signup",
+        "options": {
+          "allowedOrigins": "https://yourdomain.com,https://www.yourdomain.com,http://localhost:3000"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -600,
+        0
+      ],
+      "id": "535e0614-64a7-453d-92c6-6f589036d743",
+      "name": "Webhook — Signup Form",
+      "webhookId": "f48fb5a2-967e-4944-9412-01248dc6af37",
+      "notes": "Expects JSON { email, honeypot }. Replace yourdomain.com in Allowed Origins (CORS) with your real domain — keep both www and non-www."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1d338188-967d-46a2-aa0e-288b4273dfe6",
+              "leftValue": "={{ $json.body.honeypot }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -380,
+        0
+      ],
+      "id": "8e3fc257-278e-48b9-a53c-673024262f20",
+      "name": "Honeypot Empty? (not a bot)"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "PASTE_OR_SELECT_YOUR_NEWSLETTER_DATABASE",
+          "mode": "list",
+          "cachedResultName": "Select your Newsletter database"
+        },
+        "returnAll": true,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "Email|email",
+              "condition": "equals",
+              "emailValue": "={{ $('Webhook — Signup Form').item.json.body.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -160,
+        0
+      ],
+      "id": "90bc1894-4e5c-4f0d-ab2f-1aa70f44aacc",
+      "name": "Find Existing Subscriber",
+      "alwaysOutputData": true,
+      "notes": "Select your Notion credential and your Newsletter database."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "08efeb37-921c-493e-8049-b4a080e458cd",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        60,
+        0
+      ],
+      "id": "03057f57-9dae-475d-9fd7-a830ae16cd0a",
+      "name": "New Email?"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "PASTE_OR_SELECT_YOUR_NEWSLETTER_DATABASE",
+          "mode": "list",
+          "cachedResultName": "Select your Newsletter database"
+        },
+        "title": "={{ $('Webhook — Signup Form').item.json.body.email }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Email|email",
+              "emailValue": "={{ $('Webhook — Signup Form').item.json.body.email }}"
+            },
+            {
+              "key": "Status|select",
+              "selectValue": "Subscribed"
+            },
+            {
+              "key": "Date subscribed|date",
+              "date": "={{ $now }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        280,
+        -80
+      ],
+      "id": "7b8a3aa4-51ab-47d7-b92a-e819db940ddf",
+      "name": "Create Subscriber",
+      "notes": "Property names must match your database exactly: Email, Status (option 'Subscribed'), Date subscribed. NEXT STEPS (not included): welcome email, weekly newsletter, unsubscribe link — see the Thaus Blueprint, section 6."
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook — Signup Form": {
+      "main": [
+        [
+          {
+            "node": "Honeypot Empty? (not a bot)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Honeypot Empty? (not a bot)": {
+      "main": [
+        [
+          {
+            "node": "Find Existing Subscriber",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Find Existing Subscriber": {
+      "main": [
+        [
+          {
+            "node": "New Email?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Email?": {
+      "main": [
+        [
+          {
+            "node": "Create Subscriber",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [],
+  "meta": {
+    "note": "From the Thaus Blueprint (thaus.co/blueprint). Free to use. No support included."
+  }
+}

@@ -282,9 +282,13 @@ export default function ChatWidget() {
 
   const goToContact = () => {
     setOpen(false);
-    document
-      .getElementById("contact")
-      ?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+    const contact = document.getElementById("contact");
+    // pages without a contact section (e.g. /blueprint) go to the home one
+    if (!contact) {
+      window.location.href = "/#contact";
+      return;
+    }
+    contact.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
   };
 
   const hasUserMessage = messages.some((m) => m.role === "user");
