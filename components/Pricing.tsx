@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent, type ReactNode } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 import { Section } from "@/components/Section";
@@ -168,7 +169,11 @@ function BlueprintForm() {
         className="h-9 rounded-control border-line bg-transparent px-3 text-ink placeholder:text-dim focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/40"
       />
       <p className="text-xs text-dim">
-        You&apos;ll also get the weekly Build Log. Unsubscribe anytime.
+        You&apos;ll also get the weekly Build Log. Unsubscribe anytime. See our{" "}
+        <Link href="/privacy" className="text-accent hover:underline">
+          Privacy Policy
+        </Link>
+        .
       </p>
       <input
         type="text"

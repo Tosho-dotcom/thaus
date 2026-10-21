@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Section } from "@/components/Section";
@@ -111,6 +112,15 @@ export function Newsletter() {
           {error && (
             <p id="newsletter-error" className="mt-2 text-xs text-destructive">
               {error}
+            </p>
+          )}
+          {status !== "success" && (
+            <p className="mt-3 text-xs text-dim">
+              See our{" "}
+              <Link href="/privacy" className="text-accent hover:underline">
+                Privacy Policy
+              </Link>
+              .
             </p>
           )}
         </div>

@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getLegalDoc, legalSlugs } from "@/lib/legal";
 import { siteUrl } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -15,5 +16,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.5,
     },
+    ...legalSlugs.map((slug) => ({
+      url: `${siteUrl}/${slug}`,
+      lastModified: getLegalDoc(slug).updatedDate,
+      changeFrequency: "yearly" as const,
+      priority: 0.3,
+    })),
   ];
 }

@@ -1,16 +1,25 @@
 "use client";
 
+import { Fragment } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Music2, ArrowUp } from "lucide-react";
 import { Section } from "@/components/Section";
 import { StaggerGroup } from "@/components/Reveal";
 import { GithubIcon, InstagramIcon } from "@/components/icons";
+import { openConsentSettings } from "@/lib/consent";
 import { fadeUp } from "@/lib/motion";
 
 const socials = [
   { label: "Instagram", href: "https://instagram.com/thaus.co", icon: InstagramIcon },
   { label: "TikTok", href: "https://tiktok.com/@thaus.co", icon: Music2 },
   { label: "GitHub", href: "https://github.com/thaus-co", icon: GithubIcon },
+];
+
+const legalLinks = [
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
+  { label: "Cookies", href: "/cookies" },
 ];
 
 export function Footer() {
@@ -57,6 +66,29 @@ export function Footer() {
             <p className="font-mono text-xs text-dim">
               © 2026 Thaus. Built in public.
             </p>
+            <nav
+              aria-label="Legal"
+              className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs text-dim"
+            >
+              {legalLinks.map((link) => (
+                <Fragment key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="transition-colors hover:text-accent"
+                  >
+                    {link.label}
+                  </Link>
+                  <span aria-hidden>·</span>
+                </Fragment>
+              ))}
+              <button
+                type="button"
+                onClick={openConsentSettings}
+                className="cursor-pointer transition-colors hover:text-accent"
+              >
+                Cookie settings
+              </button>
+            </nav>
             <a
               href="#hero"
               className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.1em] text-dim transition-colors hover:text-accent"

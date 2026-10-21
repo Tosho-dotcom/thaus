@@ -433,6 +433,13 @@ export default function ChatWidget() {
                   >
                     Contact form
                   </a>
+                  {" · "}
+                  <a
+                    href="/privacy"
+                    className="underline underline-offset-2 hover:text-ink"
+                  >
+                    Privacy
+                  </a>
                 </p>
                 {input.length > COUNTER_FROM && (
                   <span className="shrink-0 font-mono">

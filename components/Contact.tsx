@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState, type FormEvent } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Send } from "lucide-react";
 import { Section } from "@/components/Section";
@@ -257,6 +258,13 @@ export function Contact() {
               >
                 {status === "loading" ? "Sending…" : "Send message"}
               </CtaButton>
+              <p className="mt-3 text-xs text-dim">
+                By sending this form you agree to our{" "}
+                <Link href="/privacy" className="text-accent hover:underline">
+                  Privacy Policy
+                </Link>
+                .
+              </p>
             </div>
           </form>
         )}
