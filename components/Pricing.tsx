@@ -10,7 +10,7 @@ import { Reveal, StaggerGroup } from "@/components/Reveal";
 import { CtaButton, CtaLink } from "@/components/CtaButton";
 import { Input } from "@/components/ui/input";
 import { fadeUp, EASE } from "@/lib/motion";
-import { selectPlan, type ProjectType } from "@/lib/plan-select";
+import { ContactModal, type ModalPlan } from "@/components/ContactModal";
 import { requestBlueprint } from "@/lib/webhooks";
 import { cn } from "@/lib/utils";
 
@@ -30,7 +30,7 @@ interface Plan {
   cta?: {
     label: string;
     variant: "filled" | "outline";
-    preselect: ProjectType;
+    preselect: ModalPlan;
   };
   finePrint?: string;
   highlight?: boolean;
@@ -107,6 +107,8 @@ const plans: Plan[] = [
     placement: "order-1 md:col-span-2 lg:col-span-1 lg:order-3",
   },
 ];
+
+type OpenContact = (plan: ModalPlan, trigger: HTMLElement) => void;
 
 function validEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -345,7 +347,15 @@ function TemplateBar() {
   );
 }
 
-function PlanCard({ plan, children }: { plan: Plan; children?: ReactNode }) {
+function PlanCard({
+  plan,
+  onOpenContact,
+  children,
+}: {
+  plan: Plan;
+  onOpenContact: OpenContact;
+  children?: ReactNode;
+}) {
   return (
     <motion.div
       id={`plan-${plan.id}`}
@@ -424,16 +434,16 @@ function PlanCard({ plan, children }: { plan: Plan; children?: ReactNode }) {
       </div>
 
       {plan.cta && (
-        <CtaLink
-          href="#contact"
-          onClick={() => selectPlan(plan.cta!.preselect)}
+        <CtaButton
+          type="button"
+          onClick={(e) => onOpenContact(plan.cta!.preselect, e.currentTarget)}
           variant={plan.cta.variant}
           size="sm"
           icon={ArrowRight}
           className="mt-6 w-full"
         >
           {plan.cta.label}
-        </CtaLink>
+        </CtaButton>
       )}
       {plan.finePrint && (
         <p className="mt-3 text-center font-mono text-[0.7rem] text-dim">
@@ -447,6 +457,14 @@ function PlanCard({ plan, children }: { plan: Plan; children?: ReactNode }) {
 }
 
 export function Pricing() {
+  const [modalPlan, setModalPlan] = useState<ModalPlan | null>(null);
+  const [modalTrigger, setModalTrigger] = useState<HTMLElement | null>(null);
+
+  const openContact: OpenContact = (plan, trigger) => {
+    setModalTrigger(trigger);
+    setModalPlan(plan);
+  };
+
   return (
     <Section id="pricing">
       <Reveal variants={fadeUp} className="max-w-2xl">
@@ -462,7 +480,7 @@ export function Pricing() {
 
       <StaggerGroup className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {plans.map((plan) => (
-          <PlanCard key={plan.id} plan={plan}>
+          <PlanCard key={plan.id} plan={plan} onOpenContact={openContact}>
             {plan.id === "blueprint" && (
               <>
                 <BlueprintForm />
@@ -490,16 +508,16 @@ export function Pricing() {
               Projects from $3,000.
             </p>
           </div>
-          <CtaLink
-            href="#contact"
-            onClick={() => selectPlan("Custom")}
+          <CtaButton
+            type="button"
+            onClick={(e) => openContact("Custom", e.currentTarget)}
             variant="outline"
             size="sm"
             icon={ArrowRight}
             className="shrink-0 self-start md:self-auto"
           >
             Book a call
-          </CtaLink>
+          </CtaButton>
         </div>
 
         <p className="mt-6 font-mono text-xs text-dim">
@@ -507,6 +525,12 @@ export function Pricing() {
           after a short call.
         </p>
       </Reveal>
+
+      <ContactModal
+        plan={modalPlan}
+        onClose={() => setModalPlan(null)}
+        returnFocusTo={modalTrigger}
+      />
     </Section>
   );
 }

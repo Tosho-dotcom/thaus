@@ -196,6 +196,24 @@
   }
 }
 
+/* Pricing contact modal: lock the page and clear the floating buttons */
+html[data-contact-modal-open],
+html[data-contact-modal-open] body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+html[data-contact-modal-open] .back-to-top,
+html[data-contact-modal-open] .chat-launcher {
+  display: none;
+}
+/* Full-screen mobile sheet: 100vh fallback, then dynamic viewport */
+@media (max-width: 639px) {
+  .contact-modal {
+    height: 100vh;
+    height: 100dvh;
+  }
+}
+
 /* Chat widget: on mobile the open chat is a full-screen sheet */
 @media (max-width: 639px) {
   html[data-chat-open] .back-to-top {

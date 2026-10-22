@@ -452,7 +452,7 @@ export default function ChatWidget() {
         )}
       </AnimatePresence>
 
-      <div className="fixed right-3 bottom-[76px] z-50 md:right-5 md:bottom-[84px]">
+      <div className="chat-launcher fixed right-3 bottom-[76px] z-50 md:right-5 md:bottom-[84px]">
         {pulse && (
           <motion.span
             aria-hidden="true"
