@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, type FormEvent, type ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, Check } from "lucide-react";
 import { Section } from "@/components/Section";
 import { Reveal, StaggerGroup } from "@/components/Reveal";
 import { CtaButton, CtaLink } from "@/components/CtaButton";
@@ -207,30 +208,139 @@ function BlueprintForm() {
 function TemplateLine() {
   return (
     <div className="mt-5 border-t border-line pt-4">
-      {templateCheckoutUrl ? (
+      <a
+        href="#template"
+        className="group/tpl inline-flex items-start gap-1 text-sm text-ink transition-colors hover:text-accent"
+      >
+        Prefer a ready-made site? Get the template — $39
+        <ArrowDown
+          size={16}
+          strokeWidth={1.5}
+          className="mt-0.5 shrink-0 transition-transform duration-200 group-hover/tpl:translate-y-0.5"
+          aria-hidden
+        />
+      </a>
+    </div>
+  );
+}
+
+const templateFeatures = [
+  "Full React + Vite source code",
+  "Forms ready to connect (any webhook)",
+  "README with setup and deploy steps",
+  "One website license",
+];
+
+function TemplateBar() {
+  return (
+    <div
+      id="template"
+      className="group/tpl-bar grid scroll-mt-24 grid-cols-1 gap-6 rounded-card border border-line border-t-2 border-t-accent bg-surface p-6 transition-colors duration-250 hover:border-accent md:grid-cols-2 md:gap-10"
+    >
+      <div>
         <a
-          href={templateCheckoutUrl}
+          href="https://zynnth.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="group/tpl inline-flex items-start gap-1 text-sm text-ink transition-colors hover:text-accent"
+          className="group/img relative block aspect-[16/10] overflow-hidden rounded-card border border-line bg-bg"
         >
-          Want the full site code? Get the Template — $49
-          <ArrowUpRight
-            size={16}
-            strokeWidth={1.5}
-            className="mt-0.5 shrink-0 transition-transform duration-200 group-hover/tpl:-translate-y-0.5 group-hover/tpl:translate-x-0.5"
-            aria-hidden
+          <Image
+            src="/templates/zynnth-preview.jpg"
+            alt="Zynnth site preview — the website template"
+            fill
+            sizes="(min-width: 1200px) 540px, (min-width: 768px) 50vw, 100vw"
+            className="object-cover transition-transform duration-300 ease-out group-hover/img:scale-[1.03]"
           />
         </a>
-      ) : (
-        <p className="text-sm text-dim">
-          Template (full site code) — $49 · coming soon
+        <a
+          href="https://zynnth.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 inline-block font-mono text-xs uppercase tracking-[0.12em] text-accent hover:underline"
+        >
+          Live demo ↗
+        </a>
+        <p className="mt-1.5 font-mono text-[0.7rem] leading-relaxed text-dim">
+          Demo shows the original site. The template ships with neutral
+          placeholder content (no videos).
         </p>
-      )}
-      <p className="mt-1.5 font-mono text-[0.7rem] leading-relaxed text-dim">
-        Code only, no automations or setup. $49 is credited toward Foundation
-        within 30 days.
-      </p>
+      </div>
+
+      <div className="flex flex-col">
+        <p className="font-mono text-xs uppercase tracking-[0.12em] text-accent">
+          Template · DIY
+        </p>
+        <h3 className="mt-2 font-display text-xl font-medium">
+          Get a ready-made site. Set it up yourself.
+        </h3>
+        <p className="mt-2 text-sm leading-relaxed text-dim">
+          The full source code of a real Thaus build — the Zynnth site. React
+          + Vite + Tailwind, clean and documented.
+        </p>
+
+        <ul className="mt-5 flex flex-col gap-2.5">
+          {templateFeatures.map((feature) => (
+            <li key={feature} className="flex items-start gap-2">
+              <Check
+                size={14}
+                strokeWidth={1.5}
+                className="mt-0.5 shrink-0 text-accent"
+                aria-hidden
+              />
+              <span className="font-mono text-xs leading-relaxed text-dim">
+                {feature}
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        <p className="mt-6 flex flex-wrap items-baseline gap-x-2">
+          <span className="font-display text-3xl font-bold tracking-[-0.02em]">
+            $39
+          </span>
+          <span className="font-mono text-xs text-dim">
+            one-time · code only, no setup or support
+          </span>
+        </p>
+
+        {templateCheckoutUrl ? (
+          <CtaLink
+            href={templateCheckoutUrl}
+            external
+            variant="filled"
+            size="sm"
+            icon={ArrowUpRight}
+            className="mt-5 w-full sm:w-auto sm:self-start"
+          >
+            Buy the template
+          </CtaLink>
+        ) : (
+          <CtaButton
+            type="button"
+            variant="filled"
+            size="sm"
+            disabled
+            className="mt-5 w-full sm:w-auto sm:self-start"
+          >
+            Coming soon
+          </CtaButton>
+        )}
+        <p className="mt-3 font-mono text-[0.7rem] leading-relaxed text-dim">
+          $39 credited toward Foundation within 30 days.{" "}
+          <Link href="/template-license" className="text-accent hover:underline">
+            Template License
+          </Link>{" "}
+          applies.
+        </p>
+        <p className="mt-1.5 font-mono text-[0.7rem] leading-relaxed text-dim">
+          Requires basic developer skills (Node.js, npm, deploying a site).
+          Prefer it done for you? See{" "}
+          <a href="#plan-foundation" className="text-accent hover:underline">
+            Foundation
+          </a>
+          .
+        </p>
+      </div>
     </div>
   );
 }
@@ -238,11 +348,12 @@ function TemplateLine() {
 function PlanCard({ plan, children }: { plan: Plan; children?: ReactNode }) {
   return (
     <motion.div
+      id={`plan-${plan.id}`}
       variants={fadeUp}
       whileHover={{ y: -4 }}
       transition={{ duration: 0.25, ease: EASE }}
       className={cn(
-        "flex flex-col rounded-card border bg-surface p-6 transition-colors duration-250 hover:border-accent",
+        "flex scroll-mt-24 flex-col rounded-card border bg-surface p-6 transition-colors duration-250 hover:border-accent",
         plan.highlight ? "border-accent" : "border-line",
         plan.placement
       )}
@@ -361,6 +472,10 @@ export function Pricing() {
           </PlanCard>
         ))}
       </StaggerGroup>
+
+      <Reveal variants={fadeUp} className="mt-6">
+        <TemplateBar />
+      </Reveal>
 
       <Reveal variants={fadeUp} className="mt-6">
         <div className="flex flex-col gap-6 rounded-card border border-line bg-surface p-6 transition-colors duration-250 hover:border-accent md:flex-row md:items-center md:justify-between md:gap-10">

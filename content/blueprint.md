@@ -183,7 +183,7 @@ Each of these builds on the same architecture. All of them are part of Thaus bui
 
 ## Want it built instead?
 
-- **Template — $49.** The full website code from a real Thaus build. Code only, set it up yourself. *($49 is credited toward Foundation within 30 days.)*
+- **Template — $39.** The full website code from a real Thaus build. Code only, set it up yourself. *($39 is credited toward Foundation within 30 days.)*
 - **Foundation — from $990.** A professional website with the contact form and newsletter signup automated. Hosted and monitored for $29/month.
 - **Full Haus — $249/month + setup.** The complete system: AI newsletter, booking, AI chat assistant, monthly reports, ongoing maintenance.
 - **Custom.** Your own servers, integrations, SLA — book a call.
