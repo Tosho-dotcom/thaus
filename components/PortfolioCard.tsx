@@ -46,7 +46,7 @@ export function PortfolioCard({ item }: { item: PortfolioItem }) {
       className="group/card flex flex-col overflow-hidden rounded-card border border-line bg-surface transition-colors duration-250 hover:border-accent"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-bg">
-        {imageFailed ? (
+        {imageFailed || !item.thumbnail ? (
           <div className="absolute inset-0 flex items-center justify-center transition-transform duration-300 ease-out group-hover/card:scale-[1.03]">
             <span className="font-mono text-sm uppercase tracking-[0.14em] text-dim">
               {item.title}
@@ -87,7 +87,7 @@ export function PortfolioCard({ item }: { item: PortfolioItem }) {
           href={item.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="group/link mt-2 inline-flex w-fit items-center gap-1.5 font-mono text-xs uppercase tracking-[0.1em] text-ink transition-colors hover:text-accent"
+          className="group/link mt-auto inline-flex pt-2 w-fit items-center gap-1.5 font-mono text-xs uppercase tracking-[0.1em] text-ink transition-colors hover:text-accent"
         >
           {item.status === "Demo" ? "Try the demo" : "Visit site"}
           <ArrowUpRight

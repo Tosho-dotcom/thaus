@@ -4,7 +4,9 @@ export interface PortfolioItem {
   url: string;
   description: string;
   tags: string[];
-  thumbnail: string;
+  // Omit until the screenshot exists in /public/portfolio; the card shows a
+  // placeholder instead.
+  thumbnail?: string;
   status: "Live" | "Demo" | "In progress";
 }
 
@@ -29,6 +31,17 @@ export const portfolioItems: PortfolioItem[] = [
       "A med spa site that runs the front desk by itself. Clients book online and get a confirmation, a reminder before the visit and a review request after it. Every enquiry gets an instant reply and lands in your CRM, an AI assistant answers questions day and night, and the weekly newsletter writes itself.",
     tags: ["Booking", "n8n", "AI Chat", "CRM"],
     thumbnail: "/portfolio/velure.png",
+    status: "Demo",
+  },
+  {
+    id: "glossworks",
+    title: "GlossWorks Detail Studio",
+    url: "https://glossworks-detailing-sigma.vercel.app",
+    description:
+      "A detailing studio site that sells without the phone. Customers pick a package, add-ons and a time slot in a six-step booking flow, buy gift vouchers and send custom requests with photos. Each feature shows the automation behind it: booking confirmations and reminders, voucher codes, review requests and an instant reply to every enquiry.",
+    tags: ["Booking", "Vouchers", "Reviews", "AI Chat"],
+    // TODO(glossworks): set thumbnail: "/portfolio/glossworks.png" once the
+    // 1440x900 screenshot is added.
     status: "Demo",
   },
 ];
