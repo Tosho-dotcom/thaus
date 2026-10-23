@@ -40,8 +40,7 @@ export const portfolioItems: PortfolioItem[] = [
     description:
       "A detailing studio site that sells without the phone. Customers pick a package, add-ons and a time slot in a six-step booking flow, buy gift vouchers and send custom requests with photos. Each feature shows the automation behind it: booking confirmations and reminders, voucher codes, review requests and an instant reply to every enquiry.",
     tags: ["Booking", "Vouchers", "Reviews", "AI Chat"],
-    // TODO(glossworks): set thumbnail: "/portfolio/glossworks.png" once the
-    // 1440x900 screenshot is added.
+    thumbnail: "/portfolio/glossworks.png",
     status: "Demo",
   },
 ];
