@@ -43,4 +43,14 @@ export const portfolioItems: PortfolioItem[] = [
     thumbnail: "/portfolio/glossworks.png",
     status: "Demo",
   },
+  {
+    id: "halden-stone",
+    title: "Halden & Stone",
+    url: "https://halden-stone.vercel.app",
+    description:
+      "A design-build studio site made to turn high-value visitors into booked calls. An animated floor plan walks you through a finished home, buyers browse homes for sale and book private viewings, and future owners pick a call slot or send plans and photos for a quote. Each feature shows the automation behind it: calendar booking with text reminders, inquiry triage, a double opt-in newsletter and review requests after handover.",
+    tags: ["Booking", "Lead intake", "Listings", "AI Chat"],
+    thumbnail: "/portfolio/halden-stone.png",
+    status: "Demo",
+  },
 ];
