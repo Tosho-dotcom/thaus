@@ -10,25 +10,25 @@ const steps = [
     number: "01",
     title: "Brief",
     description:
-      "You tell me what you're building — a website, automation, or a complete system.",
+      "You show me where leads get stuck today: the website, the inbox, the booking, or all of it.",
   },
   {
     number: "02",
     title: "Build",
     description:
-      "I design and build the whole thing: real code, real automation — not a template.",
+      "I design and code the site and wire up the automation behind it, built around how your business runs.",
   },
   {
     number: "03",
     title: "Launch",
     description:
-      "Deployed, tested, and live — with the infrastructure to back it up.",
+      "Tested, deployed and monitored. Forms, bookings and emails work from day one.",
   },
   {
     number: "04",
     title: "Document",
     description:
-      "You get the full build log and ongoing updates — not silence after launch.",
+      "You get the full build log, and I keep you posted on what changes after launch.",
   },
 ];
 

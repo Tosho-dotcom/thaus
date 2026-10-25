@@ -55,6 +55,12 @@
   --radius-card: 0.75rem;
   --radius-control: 0.625rem;
   --radius-tag: 0.5rem;
+
+  /* pricing cards: softer corners, lit top edge, recommended plan lifted */
+  --radius-plan: 1.125rem;
+  --shadow-plan: inset 0 1px 0 0 rgb(255 255 255 / 0.06);
+  --shadow-plan-raised: inset 0 1px 0 0 rgb(255 255 255 / 0.12),
+    0 28px 60px -24px rgb(59 91 255 / 0.45), 0 12px 24px -12px rgb(0 0 0 / 0.6);
 }
 
 @layer base {

@@ -61,7 +61,7 @@ export const faqs = [
   },
   {
     q: "Who is Thaus for?",
-    a: "Local and service businesses that want one connected system instead of five disconnected tools: clinics, med spas, agencies, real estate and more. If you're not sure it fits, just ask.",
+    a: "Service businesses that already get enquiries and lose some of them to slow replies, missed calls or forgotten follow-ups: clinics, med spas, agencies, real estate and similar. If you don't have steady enquiries yet, a system won't fix that, and I'll tell you so on the first call. Start with the free Blueprint instead.",
   },
   {
     q: "How long does a project take?",
@@ -85,7 +85,7 @@ export const faqs = [
   },
   {
     q: "What does it cost?",
-    a: "Blueprint is free. Foundation is a one-time build (launch price $990) plus $29/month hosting. Full Haus is $1,490 setup plus $249/month, including maintenance, AI and monthly reports. Bigger projects start at $3,000 — see Pricing above.",
+    a: "Blueprint is free. Foundation is a one-time build (launch price $990) plus $29/month hosting. Full Haus is $1,490 setup plus $249/month, including maintenance, AI and monthly reports. Bigger projects start at $3,000. See Pricing above.",
   },
   {
     q: "Where is my website hosted?",

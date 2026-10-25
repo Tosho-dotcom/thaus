@@ -23,7 +23,7 @@ export function FAQ() {
           Questions
         </h2>
         <p className="mt-3 text-lg text-dim">
-          If it&apos;s not here, ask directly — see the contact section below.
+          If it&apos;s not here, ask me directly in the contact form below.
         </p>
       </Reveal>
 

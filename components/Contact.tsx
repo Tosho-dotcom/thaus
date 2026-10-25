@@ -20,7 +20,8 @@ export function Contact() {
           Start a project
         </h2>
         <p className="mt-3 text-lg text-dim">
-          Tell me what you&apos;re building. I&apos;ll reply personally.
+          Tell me where leads slip through today. I reply personally, and if
+          Thaus isn&apos;t the right fit, I&apos;ll say so.
         </p>
       </Reveal>
 

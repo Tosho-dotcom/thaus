@@ -3,8 +3,14 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ArrowDown, ArrowRight, ArrowUpRight, Check } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ArrowDown,
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  LoaderCircle,
+} from "lucide-react";
 import { Section } from "@/components/Section";
 import { Reveal, StaggerGroup } from "@/components/Reveal";
 import { CtaButton, CtaLink } from "@/components/CtaButton";
@@ -16,13 +22,21 @@ import { cn } from "@/lib/utils";
 
 const templateCheckoutUrl = process.env.NEXT_PUBLIC_TEMPLATE_CHECKOUT_URL;
 
-interface Plan {
-  id: string;
-  name: string;
+type Billing = "monthly" | "yearly";
+
+interface PlanPrice {
   price: string;
   pricePeriod?: string;
   strikePrice?: string;
   priceNote: string;
+  finePrint?: string;
+}
+
+interface Plan extends PlanPrice {
+  id: string;
+  name: string;
+  /** Per-billing overrides; plans without one ignore the toggle. */
+  billing?: Record<Billing, PlanPrice>;
   badge?: string;
   description: string;
   featuresIntro?: string;
@@ -32,7 +46,6 @@ interface Plan {
     variant: "filled" | "outline";
     preselect: ModalPlan;
   };
-  finePrint?: string;
   highlight?: boolean;
   /** Grid placement: mobile stacks Full Haus → Foundation → Blueprint,
       tablet puts Full Haus full-width on top, desktop reads left to right. */
@@ -46,7 +59,7 @@ const plans: Plan[] = [
     price: "Free",
     priceNote: "for your email",
     description:
-      "The exact blueprint behind a Thaus system — plus a ready-made n8n newsletter signup workflow.",
+      "The exact blueprint behind a Thaus system, plus a ready-made n8n newsletter signup workflow. Build it yourself, at your pace.",
     features: [
       "Build document: stack, architecture, process",
       "n8n workflow: newsletter signup → database",
@@ -59,10 +72,10 @@ const plans: Plan[] = [
     name: "Foundation",
     price: "$990",
     strikePrice: "$1,490",
-    priceNote: "one-time + $29/mo hosting",
-    badge: "Launch price · first 5 clients",
+    priceNote: "one-time + $29/mo hosting · launch price, first 5 clients",
+    badge: "Launch price",
     description:
-      "A professional website that works from day one — with the contact form and newsletter signup already automated.",
+      "For when your site looks dated and enquiries pile up in your inbox. A new site with the contact form and newsletter signup already automated.",
     features: [
       "Custom website (one-page or up to 5 pages)",
       "Contact form automation: notification + auto-reply",
@@ -84,10 +97,25 @@ const plans: Plan[] = [
     name: "Full Haus",
     price: "$249",
     pricePeriod: "/mo",
-    priceNote: "+ $1,490 one-time setup · or $2,490/year (2 months free)",
-    badge: "Most complete",
+    priceNote: "+ $1,490 one-time setup",
+    billing: {
+      monthly: {
+        price: "$249",
+        pricePeriod: "/mo",
+        priceNote: "+ $1,490 one-time setup",
+        finePrint: "3-month minimum, then month-to-month.",
+      },
+      yearly: {
+        price: "$208",
+        pricePeriod: "/mo",
+        strikePrice: "$249",
+        priceNote: "billed $2,490/year · + $1,490 one-time setup",
+        finePrint: "2 months free vs. monthly billing.",
+      },
+    },
+    badge: "Recommended",
     description:
-      "The complete system — website, automation and AI — built, run and improved for you every month.",
+      "For when every reply, booking and follow-up still runs through you. The complete system, built, run and improved every month.",
     featuresIntro: "Everything in Foundation, plus:",
     features: [
       "Welcome email for new subscribers",
@@ -95,14 +123,13 @@ const plans: Plan[] = [
       "Booking or business-specific automation",
       "AI chat assistant trained on your business",
       "Monthly report: leads, bookings, subscribers, chats",
-      "Ongoing maintenance — up to 2 hours of changes/month",
+      "Ongoing maintenance: up to 2 hours of changes/month",
     ],
     cta: {
       label: "Get the Full Haus",
       variant: "filled",
       preselect: "Full Haus",
     },
-    finePrint: "3-month minimum, then month-to-month.",
     highlight: true,
     placement: "order-1 md:col-span-2 lg:col-span-1 lg:order-3",
   },
@@ -144,13 +171,22 @@ function BlueprintForm() {
       <motion.p
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.3, ease: EASE }}
         role="status"
-        className="mt-6 text-sm leading-relaxed text-ink"
+        className="mt-6 flex items-start gap-2 text-sm leading-relaxed text-ink"
       >
+        <motion.span
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.3, ease: EASE }}
+          className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full bg-accent"
+          aria-hidden
+        >
+          <Check size={11} strokeWidth={2.5} />
+        </motion.span>
         {status === "success"
-          ? "Check your inbox — the Blueprint is on its way."
-          : "You're on the list — the Blueprint lands in your inbox as soon as it's published."}
+          ? "Check your inbox. The Blueprint is on its way."
+          : "You're on the list. The Blueprint lands in your inbox as soon as it's published."}
       </motion.p>
     );
   }
@@ -192,10 +228,18 @@ function BlueprintForm() {
         type="submit"
         variant="outline"
         size="sm"
-        icon={ArrowRight}
+        icon={status === "loading" ? undefined : ArrowRight}
         disabled={status === "loading"}
         className="w-full"
       >
+        {status === "loading" && (
+          <LoaderCircle
+            size={16}
+            strokeWidth={1.5}
+            className="animate-spin"
+            aria-hidden
+          />
+        )}
         {status === "loading" ? "Sending…" : "Send me the Blueprint"}
       </CtaButton>
       {error && (
@@ -214,7 +258,7 @@ function TemplateLine() {
         href="#template"
         className="group/tpl inline-flex items-start gap-1 text-sm text-ink transition-colors hover:text-accent"
       >
-        Prefer a ready-made site? Get the template — $39
+        Prefer a ready-made site? Get the template for $39
         <ArrowDown
           size={16}
           strokeWidth={1.5}
@@ -237,7 +281,7 @@ function TemplateBar() {
   return (
     <div
       id="template"
-      className="group/tpl-bar grid scroll-mt-24 grid-cols-1 gap-6 rounded-card border border-line border-t-2 border-t-accent bg-surface p-6 transition-colors duration-250 hover:border-accent md:grid-cols-2 md:gap-10"
+      className="group/tpl-bar grid scroll-mt-24 grid-cols-1 gap-6 rounded-plan border border-line border-t-2 border-t-accent bg-surface p-6 shadow-plan transition-colors duration-250 hover:border-accent md:grid-cols-2 md:gap-10"
     >
       <div>
         <a
@@ -248,7 +292,7 @@ function TemplateBar() {
         >
           <Image
             src="/templates/zynnth-preview.jpg"
-            alt="Zynnth site preview — the website template"
+            alt="Zynnth site preview, the website template"
             fill
             sizes="(min-width: 1200px) 540px, (min-width: 768px) 50vw, 100vw"
             className="object-cover transition-transform duration-300 ease-out group-hover/img:scale-[1.03]"
@@ -276,7 +320,7 @@ function TemplateBar() {
           Get a ready-made site. Set it up yourself.
         </h3>
         <p className="mt-2 text-sm leading-relaxed text-dim">
-          The full source code of a real Thaus build — the Zynnth site. React
+          The full source code of a real Thaus build: the Zynnth site. React
           + Vite + Tailwind, clean and documented.
         </p>
 
@@ -309,7 +353,7 @@ function TemplateBar() {
           <CtaLink
             href={templateCheckoutUrl}
             external
-            variant="filled"
+            variant="outline"
             size="sm"
             icon={ArrowUpRight}
             className="mt-5 w-full sm:w-auto sm:self-start"
@@ -319,7 +363,7 @@ function TemplateBar() {
         ) : (
           <CtaButton
             type="button"
-            variant="filled"
+            variant="outline"
             size="sm"
             disabled
             className="mt-5 w-full sm:w-auto sm:self-start"
@@ -347,15 +391,105 @@ function TemplateBar() {
   );
 }
 
+const billingOptions: { value: Billing; label: string; chip?: string }[] = [
+  { value: "monthly", label: "Monthly" },
+  { value: "yearly", label: "Yearly", chip: "−17%" },
+];
+
+function BillingToggle({
+  value,
+  onChange,
+}: {
+  value: Billing;
+  onChange: (value: Billing) => void;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label="Full Haus billing period"
+      className="inline-flex rounded-full border border-line bg-surface p-1"
+    >
+      {billingOptions.map((option) => {
+        const active = option.value === value;
+        return (
+          <button
+            key={option.value}
+            type="button"
+            aria-pressed={active}
+            onClick={() => onChange(option.value)}
+            className={cn(
+              "relative flex items-center gap-2 rounded-full px-4 py-1.5 font-mono text-xs transition-colors duration-100",
+              active ? "text-ink" : "text-dim hover:text-ink"
+            )}
+          >
+            {active && (
+              <motion.span
+                layoutId="billing-pill"
+                transition={{ duration: 0.3, ease: EASE }}
+                className="absolute inset-0 rounded-full bg-surface-hover shadow-plan"
+                aria-hidden
+              />
+            )}
+            <span className="relative">{option.label}</span>
+            {option.chip && (
+              <span className="relative rounded-full bg-accent/15 px-1.5 py-0.5 text-[0.6rem] text-accent">
+                {option.chip}
+              </span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Rolls the amount vertically on change: up when it rises, down when it drops. */
+function RollingPrice({
+  value,
+  direction,
+}: {
+  value: string;
+  direction: 1 | -1;
+}) {
+  return (
+    <span className="relative inline-flex overflow-hidden">
+      <AnimatePresence mode="popLayout" initial={false} custom={direction}>
+        <motion.span
+          key={value}
+          custom={direction}
+          variants={{
+            enter: (d: number) => ({ y: `${d * 100}%`, opacity: 0 }),
+            center: { y: 0, opacity: 1 },
+            exit: (d: number) => ({ y: `${d * -100}%`, opacity: 0 }),
+          }}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{ duration: 0.3, ease: EASE }}
+          className="inline-block"
+        >
+          {value}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
+
 function PlanCard({
   plan,
+  billing,
+  direction,
   onOpenContact,
   children,
 }: {
   plan: Plan;
+  billing: Billing;
+  direction: 1 | -1;
   onOpenContact: OpenContact;
   children?: ReactNode;
 }) {
+  const price = plan.billing?.[billing] ?? plan;
+
   return (
     <motion.div
       id={`plan-${plan.id}`}
@@ -363,15 +497,26 @@ function PlanCard({
       whileHover={{ y: -4 }}
       transition={{ duration: 0.25, ease: EASE }}
       className={cn(
-        "flex scroll-mt-24 flex-col rounded-card border bg-surface p-6 transition-colors duration-250 hover:border-accent",
-        plan.highlight ? "border-accent" : "border-line",
+        // the lg raise uses the standalone `translate` property, so it stacks
+        // with framer's hover `transform` instead of being overwritten by it
+        "flex scroll-mt-24 flex-col rounded-plan border p-6 transition-colors duration-250",
+        plan.highlight
+          ? "border-accent bg-surface-hover shadow-plan-raised lg:-translate-y-4"
+          : "border-line bg-surface shadow-plan hover:border-accent",
         plan.placement
       )}
     >
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <h3 className="font-display text-xl font-medium">{plan.name}</h3>
+      <div className="flex min-h-6 flex-wrap items-center justify-between gap-2">
+        <h3 className="font-mono text-sm uppercase tracking-[0.14em] text-dim">
+          {plan.name}
+        </h3>
         {plan.badge && (
-          <span className="rounded-tag border border-accent/30 bg-accent/10 px-2 py-1 font-mono text-[0.6rem] uppercase tracking-[0.1em] text-accent">
+          <span
+            className={cn(
+              "rounded-full px-2.5 py-1 font-mono text-[0.6rem] uppercase tracking-[0.1em]",
+              plan.highlight ? "bg-accent text-ink" : "border border-line text-dim"
+            )}
+          >
             {plan.badge}
           </span>
         )}
@@ -379,25 +524,25 @@ function PlanCard({
 
       {/* floor the price block so a wrapped note (Full Haus) doesn't push
           one card's body out of line with its neighbours */}
-      <div className="mt-4 lg:min-h-[5.25rem]">
+      <div className="mt-4 lg:min-h-[6.75rem]">
         <p className="flex flex-wrap items-baseline gap-x-2">
-          <span className="font-display text-3xl font-bold tracking-[-0.02em]">
-            {plan.price}
+          <span className="font-display text-[3.25rem] leading-none font-bold tracking-[-0.03em]">
+            <RollingPrice value={price.price} direction={direction} />
           </span>
-          {plan.pricePeriod && (
-            <span className="-ml-1.5 font-mono text-xs text-dim">
-              {plan.pricePeriod}
+          {price.pricePeriod && (
+            <span className="-ml-1 font-mono text-sm text-dim">
+              {price.pricePeriod}
             </span>
           )}
-          {plan.strikePrice && (
-            <span className="font-display text-lg text-dim line-through">
+          {price.strikePrice && (
+            <span className="font-display text-xl text-dim line-through decoration-1">
               <span className="sr-only">Regular price </span>
-              {plan.strikePrice}
+              {price.strikePrice}
             </span>
           )}
         </p>
-        <p className="mt-1.5 font-mono text-xs leading-relaxed text-dim">
-          {plan.priceNote}
+        <p className="mt-2 font-mono text-xs leading-relaxed text-dim">
+          {price.priceNote}
         </p>
       </div>
 
@@ -405,26 +550,31 @@ function PlanCard({
         {plan.description}
       </p>
 
-      <div className="mt-5 flex-1">
+      <div className="mt-6 flex-1 border-t border-line pt-5">
         {plan.featuresIntro && (
-          <p className="mb-3 font-mono text-xs text-ink">
+          <p className="mb-3.5 font-mono text-xs text-ink">
             {plan.featuresIntro}
           </p>
         )}
         <ul
           className={cn(
-            "flex flex-col gap-2.5",
+            "flex flex-col gap-3.5",
             plan.highlight && "md:grid md:grid-cols-2 md:gap-x-6 lg:flex"
           )}
         >
           {plan.features.map((feature) => (
-            <li key={feature} className="flex items-start gap-2">
-              <Check
-                size={14}
-                strokeWidth={1.5}
-                className="mt-0.5 shrink-0 text-accent"
+            <li key={feature} className="flex items-start gap-2.5">
+              <span
+                className={cn(
+                  "mt-px flex size-4 shrink-0 items-center justify-center rounded-full",
+                  plan.highlight
+                    ? "bg-accent text-ink"
+                    : "bg-accent/15 text-accent"
+                )}
                 aria-hidden
-              />
+              >
+                <Check size={10} strokeWidth={2.5} />
+              </span>
               <span className="font-mono text-xs leading-relaxed text-dim">
                 {feature}
               </span>
@@ -445,9 +595,9 @@ function PlanCard({
           {plan.cta.label}
         </CtaButton>
       )}
-      {plan.finePrint && (
+      {price.finePrint && (
         <p className="mt-3 text-center font-mono text-[0.7rem] text-dim">
-          {plan.finePrint}
+          {price.finePrint}
         </p>
       )}
 
@@ -459,6 +609,9 @@ function PlanCard({
 export function Pricing() {
   const [modalPlan, setModalPlan] = useState<ModalPlan | null>(null);
   const [modalTrigger, setModalTrigger] = useState<HTMLElement | null>(null);
+  const [billing, setBilling] = useState<Billing>("yearly");
+  // monthly is the higher price, so switching to it rolls the digits up
+  const direction = billing === "monthly" ? 1 : -1;
 
   const openContact: OpenContact = (plan, trigger) => {
     setModalTrigger(trigger);
@@ -467,20 +620,33 @@ export function Pricing() {
 
   return (
     <Section id="pricing">
-      <Reveal variants={fadeUp} className="max-w-2xl">
-        <p className="label">Pricing</p>
-        <h2 className="mt-3 text-[clamp(1.75rem,3.5vw,2.75rem)] font-bold tracking-[-0.02em]">
-          From blueprint to a system that runs itself.
-        </h2>
-        <p className="mt-3 text-lg text-dim">
-          Start free, launch a solid foundation, or get the full house —
-          website, automation and AI, maintained for you.
-        </p>
-      </Reveal>
+      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <Reveal variants={fadeUp} className="max-w-2xl">
+          <p className="label">Pricing</p>
+          <h2 className="mt-3 text-[clamp(1.75rem,3.5vw,2.75rem)] font-bold tracking-[-0.02em]">
+            From blueprint to a system that runs itself.
+          </h2>
+          <p className="mt-3 text-lg text-dim">
+            These plans are for service businesses that already get enquiries
+            and lose some to slow replies. Still looking for your first
+            clients? Take the free Blueprint, because a paid build won&apos;t
+            help you yet.
+          </p>
+        </Reveal>
+        <Reveal variants={fadeUp} className="shrink-0">
+          <BillingToggle value={billing} onChange={setBilling} />
+        </Reveal>
+      </div>
 
-      <StaggerGroup className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <StaggerGroup className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:mt-16 lg:grid-cols-3">
         {plans.map((plan) => (
-          <PlanCard key={plan.id} plan={plan} onOpenContact={openContact}>
+          <PlanCard
+            key={plan.id}
+            plan={plan}
+            billing={billing}
+            direction={direction}
+            onOpenContact={openContact}
+          >
             {plan.id === "blueprint" && (
               <>
                 <BlueprintForm />
@@ -491,12 +657,12 @@ export function Pricing() {
         ))}
       </StaggerGroup>
 
-      <Reveal variants={fadeUp} className="mt-6">
+      <Reveal variants={fadeUp} className="mt-5">
         <TemplateBar />
       </Reveal>
 
-      <Reveal variants={fadeUp} className="mt-6">
-        <div className="flex flex-col gap-6 rounded-card border border-line bg-surface p-6 transition-colors duration-250 hover:border-accent md:flex-row md:items-center md:justify-between md:gap-10">
+      <Reveal variants={fadeUp} className="mt-5">
+        <div className="flex flex-col gap-6 rounded-plan border border-line bg-surface p-6 shadow-plan transition-colors duration-250 hover:border-accent md:flex-row md:items-center md:justify-between md:gap-10">
           <div className="max-w-2xl">
             <p className="label">Custom</p>
             <h3 className="mt-2 font-display text-xl font-medium">

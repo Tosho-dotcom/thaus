@@ -1,6 +1,7 @@
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
 import { TechStackStrip } from "@/components/TechStackStrip";
+import { Gap } from "@/components/Gap";
 import { HowItWorks } from "@/components/HowItWorks";
 import { Portfolio } from "@/components/Portfolio";
 import { Pricing } from "@/components/Pricing";
@@ -18,6 +19,7 @@ export default function Home() {
         <TechStackStrip />
         {/* About temporarily hidden — component kept in components/About.tsx.
             To restore: re-add the import and render <About /> here. */}
+        <Gap />
         <HowItWorks />
         <Portfolio />
         <Pricing />

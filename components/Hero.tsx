@@ -62,28 +62,30 @@ export function Hero() {
           className="relative flex max-w-3xl flex-col gap-6 lg:order-1"
         >
           <motion.p variants={fadeUp} className="label">
-            THAUS — DIGITAL PRODUCT STUDIO
+            THAUS · DIGITAL PRODUCT STUDIO
           </motion.p>
 
           <motion.h1
             variants={riseUp}
             className="text-[clamp(2.75rem,6vw,5rem)] font-bold leading-[1.02] tracking-[-0.03em]"
           >
-            More clients. Less busywork.
-            <span
-              aria-hidden
-              className="cursor-blink ml-2 inline-block h-[0.8em] w-[0.5em] translate-y-[0.08em] bg-accent align-middle"
-            />
+            Leads message at 9pm.{" "}
+            <span className="block text-dim">
+              You reply at 9am.
+              <span
+                aria-hidden
+                className="cursor-blink ml-2 inline-block h-[0.8em] w-[0.5em] translate-y-[0.08em] bg-accent align-middle"
+              />
+            </span>
           </motion.h1>
 
           <motion.p
             variants={fadeUp}
             className="max-w-xl text-lg leading-relaxed text-dim md:text-xl"
           >
-            Your website books the appointments, answers questions and follows
-            up with every lead, day and night. You get hours back every week
-            and spend them on clients, not admin. We set it all up for you,
-            start to finish.
+            By then, plenty of them have booked with whoever answered first.
+            Thaus builds the website and automation that reply, book and
+            follow up the moment someone asks, so no lead sits waiting on you.
           </motion.p>
 
           <motion.div variants={fadeUp} className="flex flex-wrap gap-4 pt-2">
