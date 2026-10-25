@@ -67,7 +67,7 @@ export function Hero() {
 
           <motion.h1
             variants={riseUp}
-            className="text-[clamp(2.75rem,6vw,5rem)] font-bold leading-[1.02] tracking-[-0.03em]"
+            className="text-[clamp(2.25rem,4.5vw,3.75rem)] text-balance font-bold leading-[1.02] tracking-[-0.03em]"
           >
             Leads message at 9pm.{" "}
             <span className="block text-dim">

@@ -356,7 +356,7 @@ function TemplateBar() {
             variant="outline"
             size="sm"
             icon={ArrowUpRight}
-            className="mt-5 w-full sm:w-auto sm:self-start"
+            className="mt-5 w-full border-accent sm:w-auto sm:self-start"
           >
             Buy the template
           </CtaLink>
@@ -366,7 +366,7 @@ function TemplateBar() {
             variant="outline"
             size="sm"
             disabled
-            className="mt-5 w-full sm:w-auto sm:self-start"
+            className="mt-5 w-full border-accent sm:w-auto sm:self-start"
           >
             Coming soon
           </CtaButton>
@@ -680,7 +680,7 @@ export function Pricing() {
             variant="outline"
             size="sm"
             icon={ArrowRight}
-            className="shrink-0 self-start md:self-auto"
+            className="shrink-0 self-start border-accent md:self-auto"
           >
             Book a call
           </CtaButton>
